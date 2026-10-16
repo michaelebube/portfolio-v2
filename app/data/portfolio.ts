@@ -106,7 +106,8 @@ export const featuredProjects: FeaturedProject[] = [
     id: 'ghostpay',
     slug: 'ghostpay',
     name: 'GhostPay',
-    purpose: 'Payment collection from a spoken sentence.',
+    purpose:
+      'Payment collection from a spoken sentence, turning a merchant’s voice into a payment request without a traditional checkout flow.',
     status: 'In development',
     stack: [
       'Nuxt 4',
