@@ -115,12 +115,36 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
             <button
               type="button"
-              class="label-mono -mr-1 inline-flex min-h-11 items-center px-2 text-ink md:hidden"
+              class="nav-menu-toggle -mr-1 inline-flex min-h-11 min-w-11 items-center justify-center text-ink md:hidden"
               :aria-expanded="isOpen"
               aria-controls="primary-nav-mobile"
+              :aria-label="isOpen ? 'Close navigation menu' : 'Open navigation menu'"
               @click="isOpen = !isOpen"
             >
-              {{ isOpen ? 'Close' : 'Menu' }}
+              <svg
+                v-if="!isOpen"
+                class="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M4 7h16M4 12h11M4 17h16" />
+              </svg>
+              <svg
+                v-else
+                class="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="m6 6 12 12M18 6 6 18" />
+              </svg>
             </button>
           </div>
         </div>

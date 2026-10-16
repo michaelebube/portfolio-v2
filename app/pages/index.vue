@@ -45,9 +45,16 @@ const aboutIntro = [
       <div
         class="flex min-h-[calc(100svh-3.5rem)] flex-col justify-center py-20 md:min-h-[calc(100svh-4rem)]"
       >
+        <p
+          class="label-mono mb-5 flex items-center gap-3 text-ink-muted lg:text-sm"
+        >
+          <span class="h-px w-8 bg-line" aria-hidden="true" />
+          Software Engineer
+        </p>
+
         <h1 class="text-[clamp(2.625rem,9vw,5.5rem)]">Ebube Michael</h1>
 
-        <p class="measure mt-7 text-[1.125rem] leading-[1.6] text-ink-muted">
+        <p class="measure mt-6 text-[1.125rem] leading-[1.6] text-ink-muted">
           I build thoughtful software products, from user-facing experiences to
           the systems behind them.
         </p>
