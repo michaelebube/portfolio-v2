@@ -67,12 +67,13 @@ const stackSummary = computed(() => props.project.stack.join(' · '))
           <dd class="mt-2 leading-[1.7] text-ink-muted">{{ project.reported }}</dd>
         </div>
 
-        <!-- A real destination, or nothing. The route is derived from the same
-             slug the case-study data is keyed by, so this cannot ship pointing
-             at a page that does not exist. -->
+        <!-- Real destinations, or none. The case-study route is derived from the
+             same slug the case-study data is keyed by, so this cannot ship
+             pointing at a page that does not exist; the repository link is
+             present only where a public repo was checked. -->
         <div class="py-4">
           <dt class="label-mono">Case study</dt>
-          <dd class="mt-3">
+          <dd class="mt-3 flex flex-wrap items-center gap-x-7 gap-y-3">
             <NuxtLink
               :to="`/work/${project.slug}`"
               class="btn btn-secondary"
@@ -80,6 +81,16 @@ const stackSummary = computed(() => props.project.stack.join(' · '))
             >
               Read the case study
             </NuxtLink>
+
+            <a
+              v-if="project.repo"
+              :href="project.repo"
+              class="label-mono nav-link inline-flex items-center gap-2"
+              :aria-label="`${project.name} source on GitHub`"
+            >
+              <GitHubMark />
+              GitHub
+            </a>
           </dd>
         </div>
       </dl>

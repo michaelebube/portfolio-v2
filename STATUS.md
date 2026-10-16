@@ -1,4 +1,4 @@
-# Status — Phase 1 review outcome, Phase 2 delivery, Phase 3 case studies, open items
+# Status — Phase 1 review outcome, Phase 2 delivery, Phase 3 case studies, Phase 4 evidence, Phase 5A screenshots, open items
 
 Working record for this repository. Not a shareable report.
 
@@ -479,3 +479,251 @@ viewport properly, measures `horizontalOverflow=0` with no culprits at all three
 - **Not verified in this pass:** anything requiring a deployed domain, anything inside the sibling
   repositories beyond reading them, and every claim the pages themselves mark as partial, reported or
   unevidenced — those markings are the honest state, not gaps to close here.
+
+---
+
+## Phase 4 — Project evidence, case-study accuracy and visual assets (2026-10-16)
+
+Objective was truthful representation: real screenshots where they exist, honest gaps where they do
+not, and an accurate architecture diagram for GhostPay that does not claim the whole system. No
+redesign. `taste-skill`, the inspector and the linter were **not** run this phase — the brief forbade
+invoking them — so nothing here rests on a rendered visual check.
+
+### §1 Evidence inventory, established before any edit
+
+Read from the sibling repositories and from the filesystem. No asset was searched for indefinitely.
+
+| Project | Genuine captures on disk | What they actually show | Verdict |
+|---|---|---|---|
+| MindWell AI | 1 | The conversation list at phone width, 212×466. Eleven rows, all titled “New chat”, each with a delete control. `bgImage.png` is an app background, not interface evidence. `mindwell/docs/` is empty. | Used, with the limit stated in its caption |
+| XVault | 7 unique (2 are byte-duplicates) | Library-empty, category-created, uncategorized, settings and sign-in-mobile. **Every count in every one is zero**, and the account is a test account named “UI Smoke”. | 5 used; the duplication and the empty-state problem are both stated |
+| GhostPay | 0 | No application capture exists anywhere in either repository — only Android build resources (`splash.png`, `ic_launcher*.png`). | Diagram only; no screenshot claimed |
+| Kene's Portfolio | 0 | — | Untouched |
+| Investment-fund demo | 0 | — | Untouched |
+
+Two categories the brief asked to separate, with nothing in either:
+
+- **Capturable from a working application:** nothing. No project here has a build that can be run and
+  photographed in this environment, and no browser or screenshot automation was launched.
+- **Unavailable and left as a labelled placeholder:** everything listed under “Still to capture” on
+  the three case studies, unchanged in kind from Phase 3.
+
+### §2 Assets added
+
+Copied from the sibling repositories into `public/work/<slug>/`. Source path recorded per file; the
+portfolio's existing flat asset convention under `public/` was kept.
+
+| Destination | Source | Size |
+|---|---|---|
+| `work/mindwell-ai/chat-list.png` | `mindwell/app/assets/images/Screenshot 2025-12-25 163415.png` | 24 KB, 212×466 |
+| `work/xvault/library-empty.png` | `Twitter BookMark Organizer/XShare/screenshots/02-library-empty.png` | 40 KB, 1280×900 |
+| `work/xvault/category-created.png` | `…/03-category-created.png` | 37 KB, 1280×900 |
+| `work/xvault/uncategorized.png` | `…/04-uncategorized.png` | 34 KB, 1280×900 |
+| `work/xvault/settings.png` | `…/05-settings.png` | 89 KB, 1280×1125 |
+| `work/xvault/login-mobile.png` | `…/06-login-mobile.png` | 23 KB, 390×844 |
+
+Not copied, and why: `01-login`, `05-login-dark`, `06-login-dark` and `07-login-mobile` are
+duplicates or near-duplicates of captures already taken; three sign-in screens would add nothing the
+one mobile sign-in does not. `bgImage.png` is not interface evidence.
+
+### §3 The GhostPay diagram
+
+`app/components/GhostPayArchitecture.vue` — markup and CSS, not an image and not an SVG. No
+diagramming package was installed. It is markup because it has to be readable at 390px and because
+its labels must be real text: forty lines of prose behind an `alt` attribute is not the same
+information.
+
+The diagram's purpose is the authorship line, so that is what it encodes. Every node carries a border
+style **and a word** — the mark makes the division scannable, the word carries it, matching how every
+other claim on the site presents itself.
+
+| Mark | Assertion |
+|---|---|
+| Solid | This author's work. The client repository is twelve commits and all twelve are Michael Ebube's. |
+| Dashed | Present in the source and read for this page; authorship not established by anything on disk. |
+| Dotted | Third-party service called over the network — nobody on the project wrote any of it. |
+
+Nodes, in flow order: **Android client** (solid) → **the boundary: four outbound calls** (solid) →
+**Firebase Cloud Functions v2** (dashed) → **external services** (dotted), then a closing block,
+*In the source as missing, or impossible to check*, which is drawn connected to nothing because as
+written it is not connected.
+
+A note on where the boundaries were drawn. The brief said to mark backend components as “implemented
+by other contributors, **where verified**”. Backend authorship is **not** verifiable from what is on
+disk: `GhostPay_BackendClient-main/` has no `.git` at all, so there is no commit, author or date to
+read. The node therefore says *Authorship not evidenced* rather than attributing the backend to the
+other contributors, which would have been a guess in the opposite direction. `GhostPay_Android_Nuxt/`
+does have git: 12 commits, one author, last dated 2026-06-07.
+
+### §4 Case-study claims corrected
+
+| Where | Was | Now |
+|---|---|---|
+| GhostPay `role` | “Sole engineer — Cloud Functions backend and the Nuxt client with its Android shell” | “Client work — the Nuxt + Capacitor application and its Android shell, in a collaborative build” |
+| GhostPay evidence | no authorship row | New “Who wrote what” row (`partial`) stating the twelve-commit client history and the backend's absent history |
+| GhostPay architecture | one paragraph, no division of work | Second paragraph naming the client as this author's contribution and the rest as other contributors' |
+| GhostPay decisions | rows read as one person's decisions | New leading row, “Whose decisions these are” (`reported`), placed before the list |
+| GhostPay captures | asked for a diagram “once the flow itself is verified” | Diagram delivered now, as a source-derived drawing with its own caption saying so |
+| MindWell evidence | “not that the application runs, which no capture here shows” | Names the deployment/capture gap precisely: the capture was not taken from that deployment |
+| MindWell limits | “no screenshot of it exists on this page” | Corrected — a capture now exists, and it is not from the deployment |
+| MindWell deployment link note | “no capture of it is shown above” | “no capture on this page was taken from it” |
+| XVault homepage `reported` | “The captures on hand record login, empty-library and settings states only” | Five captures described, with the zero-count problem stated as the reason none proves ingestion |
+| Homepage media frames (×3) | “Not yet captured.” | Each frame now states what exists, what does not, and where the captures are shown |
+
+Nothing was added to a project that had no evidence. No claim was upgraded: the MindWell screenshot
+did not move any evidence row, and the XVault captures explicitly did not either.
+
+### §5 Files created and changed
+
+**Created:** `app/components/GhostPayArchitecture.vue`, plus six images under `public/work/`.
+
+**Changed:**
+`app/data/caseStudies.ts` (new `CaseFigure` type, `figures`/`diagram` fields, six figures, one
+diagram, GhostPay role + two new evidence rows + architecture paragraph, MindWell and XVault claim
+corrections) · `app/pages/work/[slug].vue` (new “From the running build” section, `figuresLead`
+computed, conditional heading/lead on the missing-captures section) · `app/data/portfolio.ts` (three
+media-frame strings, XVault `reported`) · `app/components/MediaPlaceholder.vue` (docblock only) ·
+`STATUS.md`.
+
+No file was restructured and no unrelated project was touched. `git status` was read before any edit;
+it stood at the same six modified files and one untracked component carried over from the links work.
+
+### §6 Checks run
+
+- **`npm run typecheck`** — clean, no errors. (The Node 22.14 version warning is pre-existing.)
+- **`npm run build`** — green, 42.3s, 2.34 MB total. No prerender warnings.
+- **Asset paths, by filesystem check:** all six `src` values resolve under `public/`, and no orphan
+  file sits unused under `public/work/`.
+- **Declared dimensions, by PNG header:** all six `width`/`height` pairs match their files exactly,
+  so nothing is stretched and no layout shift is reserved wrongly.
+- **Built HTML, read from `.output/public/`:** MindWell carries 1 `<img>` and 1 `<figcaption>`; XVault
+  carries 5 and 5; GhostPay carries 0 images and 1 caption. `figuresLead` renders; “Still to capture”
+  appears where captures exist and “Not yet captured” where they do not. The diagram's markup, header
+  and legend appear on `/work/ghostpay` and on no other route. The corrected role is present and the
+  old sole-engineer string is gone. The homepage has no `<img>` and no stale “Not yet captured.”
+
+**Not verified this phase, and not claimed:** anything rendered. No browser was launched, no
+screenshot was taken, and no visual check was performed — the brief forbade it. The above are code
+and filesystem checks. Whether the figure grid reads well at each breakpoint is a judgement no check
+here makes.
+
+### §7 Known limitations carried forward
+
+- **The MindWell capture is weak evidence and the caption says so.** A conversation list with eleven
+  rows named “New chat” proves a screen renders. It is published because it is genuine, not because
+  it is persuasive.
+- **The XVault captures all show an empty archive.** The category-created capture is the strongest of
+  the five, and what it shows is that a person can file things. Ingestion remains unproven.
+- **GhostPay still has no screenshot of anything.** The diagram is a drawing of the source, and its
+  caption says that in the first clause.
+- **The diagram's scoped CSS ships in the shared `_slug_` chunk**, so roughly a kilobyte of
+  `.arch__*` rules is inlined into every case-study page although only GhostPay uses them. Normal for
+  a shared route chunk; noted because it is measurable.
+- **`figures` and `diagram` are optional**, so a future case study can omit both and the section does
+  not render — the page degrades to exactly its Phase 3 shape.
+- The stale-diagnostic pattern recurred: the TS plugin reported `figuresLead` as non-existent in the
+  template while `nuxt typecheck` passed clean. The typecheck is authoritative.
+
+### Verification log — Phase 4
+
+- **Method:** `npm run typecheck` and `npm run build` once each, then Node scripts reading the source
+  data, the PNG headers and the built HTML under `.output/`. No browser, no screenshot, no automation.
+- **Not verified in this pass:** rendering at any viewport; contrast of the diagram's border styles on
+  the near-black canvas; whether the six captures read clearly at the sizes the grid gives them.
+
+---
+
+## Phase 5A — Integrate existing project screenshots (2026-10-16)
+
+Both `public/work/` directories were **replaced by the site owner** between Phase 4 and this phase.
+The Phase 4 copies of five XVault captures are gone; eleven new captures appeared — six for MindWell
+and five for XVault. The new set is materially better on both projects, and one XVault capture shows a
+**populated** archive, which invalidates several statements Phase 4 wrote about empty states.
+
+### What the new captures actually show
+
+Read one at a time before any caption was written. Anything not visible in an image is not claimed.
+
+| File | Dimensions | What is in it |
+|---|---|---|
+| mindwell `…170302` | 1917×871 | Splash screen: logo on faint medical line-art |
+| mindwell `…170323` | 1917×867 | Signed-in home: greeting, SOS button, empty message field |
+| mindwell `…170514` | 1917×867 | Sidebar with **seven real conversation titles**, each with rename/delete, plus account and mood-meter links |
+| mindwell `…170526` | 1902×868 | SOS screen: escalation copy, emergency number 112; helpline list cut off below |
+| mindwell `…170601` | 1895×862 | Mood meter — **empty state**: “Not logged yet”, “No mood data for this period” |
+| mindwell `…170716` | 1902×867 | Landing page with crisis-line banner |
+| xvault `…182957` | 1916×872 | Dark desktop, **populated**: Library 18, Uncategorized 8, Football 5, Humor 1, Relatable 4, “Synced 2 minutes ago” |
+| xvault `…183016` | 480×637 | Same Relatable records in the compact layout |
+| xvault `…183055` | 352×752 | Sign-in, dark, narrow, with the invite-code line |
+| xvault `…183119` | 1911×863 | Football category, with the account menu open — **contains a personal email address** |
+| xvault `…183431` | 1917×870 | Football category, compact; one post's **photograph archived** alongside its text |
+
+### Integrated
+
+Nine figures referenced, ten in the data — six on `/work/mindwell-ai`, four on `/work/xvault`.
+
+Left unreferenced, deliberately, and both files still sit in `public/`:
+
+- `mindwell-ai/chat-list.png` — the Phase 4 capture. Superseded by `…170514`, which shows the same
+  screen with real conversation titles instead of eleven rows named “New chat”. Kept on disk because
+  the brief forbids deleting screenshots; not referenced because two views of one list is padding.
+- `xvault/Screenshot 2026-10-16 183119.png` — **unreferenced for privacy, not for quality.** The
+  account menu is open in it and shows an email address. The path is not printed here.
+
+### Layout change, and why it was needed
+
+The figures were a two-column grid in Phase 4. That was written for 1280-pixel captures; the new set
+is mostly ~1900 pixels wide, and a two-column grid renders those at roughly a quarter scale — a
+legible shape and useless as the evidence the caption beside it describes. The list is now one figure
+per row at the full width of the column. `figure.phone` still caps a genuinely narrow capture rather
+than stretching it. This is the only structural change; no section moved.
+
+### Copy corrected, because the captures contradicted it
+
+| Where | Was | Now |
+|---|---|---|
+| XVault `reported` (homepage) | “every count in all five is zero … no populated-library capture exists” | Four captures, populated archive, with the three things they still do not show |
+| XVault `media.pending` | frame stands for a populated library | frame stands for a sync caught in the act and proof of media served from storage |
+| XVault `captures` | asked for a populated library | asks for the run itself, storage proof, automatic categorisation, deletion detection |
+| MindWell `media.pending` | “three screens that have never been photographed” | names the six that exist and the two gaps they leave |
+| MindWell `captures` | SOS screen listed as unphotographed | narrowed to the helpline list the capture cuts off |
+
+### Limitations preserved, and the one that got weaker
+
+Every XVault caption keeps a qualification, because a screenshot with records in it is exactly the
+kind of evidence that gets over-read. The four now say, between them: the posts are unedited X
+content quoted as saved, so one is profane; the categories were applied by hand because the automatic
+pass still has no worker; an archived image rendering does not show the bytes came from storage
+rather than from the original URL; and nothing here shows a run rather than its result. MindWell adds
+that the mood meter is empty, no capture shows a conversation being answered, the SOS screen is a
+crisis route and not a clinical one, and no capture supports the self-reported evaluation — which
+stays `reported` with `docs/` still empty.
+
+The earlier claim that “an empty state is not evidence that ingestion works” was true for Phase 4 and
+is no longer the relevant caveat. It has been replaced rather than deleted, and the replacement says
+what the captures still fail to prove instead of being quietly dropped.
+
+### Checks
+
+- **`npm run typecheck`** — clean.
+- **`npm run build`** — green, 44.0s, 2.35 MB.
+- **References:** all ten resolve after percent-decoding; zero duplicate references; all ten declared
+  width/height pairs match the PNG headers.
+- **Built HTML:** `/work/mindwell-ai` carries 6 images and 6 captions, `/work/xvault` 4 and 4,
+  `/work/ghostpay` 0 and 1. Heading reads “Still to capture” on the two with captures and “Not yet
+  captured” on GhostPay. Every encoded path resolves against the built files.
+- **Not done, per the brief:** no browser, no rendering, no visual check, no image was copied, moved,
+  renamed, resized, cropped, recompressed or deleted.
+
+### Open, and needing a decision from the owner
+
+1. **`public/` is published whether or not a page links it.** `…183119`, with the email address, was
+   copied into `.output/public/work/xvault/` by the build. A deploy would serve it at its path even
+   though no page references it. Moving it out of `public/` is a move, which this brief forbids, so it
+   is reported instead. Recommended before any deploy.
+2. **One XVault capture quotes a profane post.** It is genuine archived content and its caption says
+   so. Swapping the Relatable captures for the Football ones only would remove it, at the cost of the
+   sidebar counts and the sync status, which are the strongest evidence on the page.
+3. **The three unreferenced/referenced files total ~2.4 MB across the two pages.** The brief forbids
+   recompressing, so the weight stands. Every image is lazy-loaded and every one carries its
+   dimensions, so nothing shifts on load.

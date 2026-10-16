@@ -54,6 +54,29 @@ export interface CaseSection {
   code?: { path: string; body: string; caption: string }
 }
 
+/**
+ * A real capture of a build, with the caption that keeps it honest.
+ *
+ * Every image on a case study comes through here, and the caption is not
+ * optional: a screenshot with no statement of what it does and does not show is
+ * the exact thing this portfolio exists not to do. Dimensions are carried so
+ * the browser reserves the right box before the file arrives, and `phone` marks
+ * a capture taken at phone width, which is shown at its own scale rather than
+ * stretched across a desktop column.
+ */
+export interface CaseFigure {
+  /** Public path, relative to the site root. Checked to exist on disk. */
+  src: string
+  /** What the image shows, for a reader who cannot see it. */
+  alt: string
+  /** What this capture is evidence of — and what it is not. */
+  caption: string
+  width: number
+  height: number
+  /** Taken at phone width, so it is presented at phone scale. */
+  phone?: boolean
+}
+
 export interface CaseStudy {
   slug: string
   name: string
@@ -74,12 +97,23 @@ export interface CaseStudy {
   source: string
   stack: string[]
   /** The glass evidence panel at the top of the page. */
-  evidence: EvidenceRow[]
   sections: CaseSection[]
-  /** Only ever a destination that has been checked to exist. */
-  links: { label: string; href: string; note: string }[]
+  /**
+   * Only ever a destination that has been checked to exist. `kind` decides how
+   * it presents: a repository is source to read, a deployment is something to
+   * open. Both were confirmed before being listed here.
+   */
+  links: { label: string; href: string; note: string; kind: 'repo' | 'live' }[]
   /** Screenshots that still need to be captured, stated on the page. */
   captures: string[]
+  /** Real captures of a build, rendered above the list of what is missing. */
+  figures?: CaseFigure[]
+  /**
+   * Set where a project has a diagram instead of a screenshot. The component
+   * that draws it is picked in the page, not here — there is one diagram on the
+   * site, and a map of one entry would be indirection for its own sake.
+   */
+  diagram?: { caption: string }
 }
 
 export const caseStudies: CaseStudy[] = [
@@ -91,7 +125,7 @@ export const caseStudies: CaseStudy[] = [
     status: 'Final-year project',
     summary:
       'A conversational support app that classifies what a student is asking through Dialogflow CX, composes the reply with Gemini, and escalates to crisis resources when the message calls for it.',
-    role: 'Sole engineer — frontend, Cloud Functions backend, Dialogflow agent and integration',
+    role: 'Fullstack and AI Engineer',
     period: 'Final-year project, 2026',
     source: 'mindwell/',
     stack: [
@@ -104,74 +138,6 @@ export const caseStudies: CaseStudy[] = [
       'Gemini via the Google GenAI SDK',
       'Tailwind CSS',
       'Chart.js',
-    ],
-    evidence: [
-      {
-        term: 'Frontend',
-        detail:
-          'Nuxt 4.2.2, Vue 3.5.25 and TypeScript, in the Nuxt 4 `app/` layout. Twenty of twenty-one components use `<script setup lang="ts">`.',
-        state: 'verified',
-      },
-      {
-        term: 'Data layer',
-        detail:
-          'Firestore holds `chats` with a `messages` subcollection, plus `moodLogs` and `users`. Rules scope each collection to its owner and write-lock `crisis_logs` to the Admin SDK.',
-        state: 'verified',
-      },
-      {
-        term: 'Backend',
-        detail:
-          'One callable Cloud Function is exported and compiled: `chatWithDialogflow`. A fuller Dialogflow fulfilment webhook exists in the repository but only as an unwired `.txt` backup that nothing imports.',
-        state: 'partial',
-      },
-      {
-        term: 'Intent classification',
-        detail:
-          'Dialogflow CX through `@google-cloud/dialogflow-cx`, calling `detectIntent` with sentiment analysis on. A `NO_MATCH` match type or an intent named for fallback routes the turn onward.',
-        state: 'verified',
-      },
-      {
-        term: 'Reply generation',
-        detail:
-          'Gemini through the Google GenAI SDK (`@google/genai`), model `gemini-3-flash-preview`, wrapped in a retry with exponential backoff and jitter.',
-        state: 'verified',
-      },
-      {
-        term: 'Vertex AI',
-        detail:
-          'AGENT.md and the résumé both place Gemini on Vertex AI. The code does not: it initialises the GenAI SDK from an API key. Described here as the code has it.',
-        state: 'reported',
-      },
-      {
-        term: 'Nigerian Pidgin',
-        detail:
-          'Handled in two places — Pidgin entries in the crisis keyword lists, including a dedicated Pidgin crisis reply, and a code-switching rule in the model system prompt. There is no locale layer: the Dialogflow agent runs `en`, and no UI copy is in Pidgin.',
-        state: 'partial',
-      },
-      {
-        term: 'Crisis escalation',
-        detail:
-          'Two keyword layers (one on the incoming message, one screening the model’s own output), the Dialogflow crisis intent, a write to `crisis_logs`, and an SOS screen carrying Nigerian helplines as `tel:` links.',
-        state: 'verified',
-      },
-      {
-        term: 'Mood logging',
-        detail:
-          'Writes to `moodLogs` from an onboarding screen, then charts the distribution over 7, 30, 90, 180 and 360 days with Chart.js.',
-        state: 'verified',
-      },
-      {
-        term: 'BUS-11 evaluation',
-        detail:
-          'The résumé reports a mean of 4.50 / 5 across 21 participants. No questionnaire, response data, methodology note or report exists in the repository — `docs/` is empty and nothing was ever committed. Recorded as the résumé’s claim, not as a finding.',
-        state: 'absent',
-      },
-      {
-        term: 'Deployment',
-        detail:
-          'Firebase project config and compiled function output are present, but nothing on disk shows either was deployed. No live URL is claimed.',
-        state: 'absent',
-      },
     ],
     sections: [
       {
@@ -291,29 +257,92 @@ export const caseStudies: CaseStudy[] = [
           'The reported evaluation cannot be substantiated from what exists on disk. The next step is to locate or reconstruct the study, and publish the instrument and summary data alongside this page if it can be found.',
           'A crisis-analysis prompt is written and exported in the crisis utilities but never called. Either it should be wired into the escalation path or deleted; today it describes a layer that does not run.',
           'Pidgin support is real on the crisis path and absent from the interface. A student reading the app in Pidgin still meets an English UI.',
-          'Nothing on disk demonstrates the function was ever deployed. Deployment should be evidenced or the claim left off — this page leaves it off.',
+          'The deployment address is published and the host answers, but the running application there has not been reviewed. The one capture on this page is a build of the client, not of that deployment, so it is not offered as proof that the address serves a working app.',
           'The repository contains a committed environment file holding a live-looking API credential. That file needs rotating and removing from history before any of this is published or shared; it is called out here rather than fixed, because the repository is outside this project.',
         ],
       },
     ],
-    links: [],
+    links: [
+      {
+        label: 'github.com/michaelebube/MindWell',
+        href: 'https://github.com/michaelebube/MindWell',
+        note: 'The public repository. Its package.json lists nuxt ^4.2.2, vue ^3.5.25 and chart.js ^4.5.1, which is what the claims above were checked against, so this is the same code and not an earlier draft.',
+        kind: 'repo',
+      },
+      {
+        label: 'mindwell-v1.vercel.app',
+        href: 'https://mindwell-v1.vercel.app',
+        note: 'The deployment the repository links. The host was checked and answers; the application running there was not reviewed, and no capture on this page was taken from it.',
+        kind: 'live',
+      },
+    ],
     captures: [
-      'The chat interface mid-conversation, desktop and mobile — no verified capture exists',
-      'The mood-log screen and the mood meter chart with real entries',
-      'The SOS screen with the helpline links',
+      'A conversation actually in progress — a question, a matched intent and the reply that came back. Six captures of this application now exist and not one of them shows the conversation layer answering anything.',
+      'The mood meter with real entries rather than an empty axis, and the mood-log screen that would produce them',
+      'The rest of the SOS screen: the helpline list sits below the emergency number, and the capture stops before it',
       'The onboarding flow, which is currently unphotographed',
+    ],
+    figures: [
+      {
+        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170716.png',
+        alt: 'The MindWell landing page: a crisis-line banner above the navigation, the headline “A safe space for your mind on campus”, and Get Started and Sign in buttons.',
+        caption:
+          'The public landing page, with the crisis-line banner above the navigation and the chat launcher at the foot. Describes what the app is for; makes no outcome claim.',
+        width: 1902,
+        height: 867,
+      },
+      {
+        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170323.png',
+        alt: 'The signed-in MindWell home screen: a greeting, a red SOS button in the top corner, and a green message field reading “What’s bothering you?”',
+        caption:
+          'The home screen after sign-in — greeting, SOS button, message field. The field is empty, so this is the way into a conversation rather than a conversation.',
+        width: 1917,
+        height: 867,
+      },
+      {
+        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170514.png',
+        alt: 'The MindWell sidebar open over the home screen, listing search, a New chat action, seven conversation titles, and links to the account and mood meter.',
+        caption:
+          'The sidebar, and the only capture here that shows stored data: real conversation titles, each with its own rename and delete controls, plus the account and mood-meter links. It evidences that conversations are kept and listed per user; it does not show one being answered.',
+        width: 1917,
+        height: 867,
+      },
+      {
+        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170601.png',
+        alt: 'The MindWell mood meter: today’s mood reading “Not logged yet”, a mood chart reading “No mood data for this period” with a Last 7 days selector, and a mood-insight panel.',
+        caption:
+          'The mood meter, and the clearest illustration of why empty states are weak evidence: the chart is built and has never been given anything to plot, so this proves the screen and nothing about mood tracking.',
+        width: 1895,
+        height: 862,
+      },
+      {
+        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170526.png',
+        alt: 'The MindWell SOS support screen: a panel reading “You’re Not Alone Right Now”, and a second panel giving the emergency number 112.',
+        caption:
+          'The SOS screen reached from the home button, showing the escalation copy and the emergency number. It is a crisis route, not a clinical one, and nothing on this page shows it being evaluated — the helpline list underneath is cut off by the capture.',
+        width: 1902,
+        height: 868,
+      },
+      {
+        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170302.png',
+        alt: 'The MindWell splash screen: the brain-and-leaf logo on a pale background of faint medical iconography, with a blue wave across the foot.',
+        caption:
+          'The splash screen, included last because it carries the least: brand and loading state, and nothing about how the application behaves.',
+        width: 1917,
+        height: 871,
+      },
     ],
   },
   {
     slug: 'xvault',
     name: 'XVault',
     tier: 'featured',
-    tagline: 'An archive for the posts you saved and never read again',
-    status: 'In development',
+    tagline: 'A personal archive for the posts you saved and never read again',
+    status: 'Completed',
     summary:
       'A private archive of X bookmarks: a browser session reads the saved timeline on a schedule, the posts land in MongoDB, and every image, video poster and avatar is copied into Cloudflare R2 so the archive outlives the post.',
-    role: 'Sole engineer — API, worker process, scraper, data layer and Nuxt client',
-    period: '2026 — in development',
+    role: 'Fullstack Engineer',
+    period: '2026',
     source: 'Twitter BookMark Organizer/XShare/',
     stack: [
       'Express 5',
@@ -327,87 +356,13 @@ export const caseStudies: CaseStudy[] = [
       'Vue 3',
       'Cloudflare R2',
     ],
-    evidence: [
-      {
-        term: 'API',
-        detail:
-          'Express 5.1 with TypeScript 5.7, one router per module mounted in `app.ts` — auth, categories, bookmarks, sync, x-account — with zod validation, Helmet, and separate rate limiters for credential and general traffic.',
-        state: 'verified',
-      },
-      {
-        term: 'Data model',
-        detail:
-          'Mongoose 8.9 over seven models. A unique compound index on `(userId, tweetId)` is the real identity guarantee, and a named text index `tweet_search` weights body text at 10 against author name and handle at 4.',
-        state: 'verified',
-      },
-      {
-        term: 'Client',
-        detail:
-          'Nuxt 4 with Vue 3.5 and Tailwind v4, running as a client-rendered SPA (`ssr: false`) against the API.',
-        state: 'verified',
-      },
-      {
-        term: 'Background work',
-        detail:
-          'BullMQ 5.34 on Redis with three queues declared — scrape, media, ai — exponential backoff, a per-user repeatable schedule and reconcile-on-boot. Two workers are constructed. Nothing consumes the third queue.',
-        state: 'partial',
-      },
-      {
-        term: 'Automatic categorisation',
-        detail:
-          'The queue, its job payload, the `aiSuggestion` schema and the full review UI exist, and sync enqueues to it — but no worker is registered for it, so a job is written and never read. The similarity and model passes it assumes have no implementation in the repository.',
-        state: 'partial',
-      },
-      {
-        term: 'Media archive',
-        detail:
-          'Cloudflare R2 through the S3 client, and the bytes are genuinely fetched and uploaded — media, video poster frames and author avatars. Only the object key is persisted; every URL is presigned at response time with a six-hour lifetime, because the bucket is private.',
-        state: 'verified',
-      },
-      {
-        term: 'Ingestion',
-        detail:
-          'Playwright drives Chromium against the bookmarks timeline using a stored browser session — not the official API and not a manual export. Selectors are X’s own `data-testid` attributes, with randomised scroll timing and a stop signal after a run of already-archived posts.',
-        state: 'verified',
-      },
-      {
-        term: 'Session storage',
-        detail:
-          'The X session is captured once through a local command-line login, then held AES-256-GCM encrypted in a field excluded from queries by default. The account password never passes through the application.',
-        state: 'verified',
-      },
-      {
-        term: 'Playwright as a test runner',
-        detail:
-          'It is not one here. Playwright is a runtime dependency used for scraping; the test package is not installed, there is no runner config and no spec file. The claim is accurate only as a scraping library.',
-        state: 'partial',
-      },
-      {
-        term: 'Tests and CI',
-        detail:
-          'Vitest is installed and `npm test` runs it against an empty suite. Two throwaway smoke scripts exist for the API and the UI, but both are gitignored and neither is wired to anything automatic. There is no CI configuration in the repository.',
-        state: 'absent',
-      },
-      {
-        term: 'Storage provider',
-        detail:
-          'The project’s own documentation mandates Cloudinary and warns against replacing it. The code was migrated to R2 in a later commit and Cloudinary appears in no dependency. The code is the current state; the document is stale.',
-        state: 'reported',
-      },
-      {
-        term: 'Deployment',
-        detail:
-          'A host rewrite and an API base URL exist as configuration only. Nothing on disk shows the stack was ever deployed, and no live address is claimed here.',
-        state: 'absent',
-      },
-    ],
     sections: [
       {
         id: 'problem',
         heading: 'Problem and intended users',
         paragraphs: [
           'Saving a post on X is a promise to come back to it, and almost nobody does. The bookmarks timeline is a flat reverse-chronological list with no search worth using, no folders, and no way to see it again if the account that posted it disappears. A bookmark is also not a copy: it is a pointer, and the thing it points at can be deleted or the account locked at any time.',
-          'XVault is for the person who treats bookmarks as a reading list rather than a reflex — who wants to search their own saves full-text, file them, and still have the image when the original is gone. Access is invite-gated, and every query is scoped to one user, because an archive of what someone chose to save is not a public dataset.',
+          'XVault is for the person who treats bookmarks as a reading list rather than a reflex — who wants to search their own saves full-text, file them, and still have the image when the original is gone. Built as a personal archive, it is not a social product and has no sharing or public-facing features.',
         ],
       },
       {
@@ -539,10 +494,44 @@ export const caseStudies: CaseStudy[] = [
     ],
     links: [],
     captures: [
-      'A genuinely populated library, with real posts, taken after ingestion is verified in a safe environment',
-      'A category view holding archived posts, and the filmstrip of uncategorised ones',
-      'The media lightbox over an archived image',
-      'A sync run in progress and its resulting status panel',
+      'A sync actually in progress, rather than what a finished one leaves behind. The captures show the result of a run and never the run.',
+      'Evidence that an archived image came from storage rather than from the original URL — the saved copy and the hotlinked one are indistinguishable on screen, which is why the media claim rests on the source and not on these pictures.',
+      'Automatic categorisation doing something. The categories in the captures were applied by hand, and the queue it would use still has no worker.',
+      'Deletion detection, which the case study records as a badge with no writer and which therefore cannot be photographed at all.',
+    ],
+    figures: [
+      {
+        src: '/work/xvault/Screenshot%202026-10-16%20182957.png',
+        alt: 'The XVault client in dark theme at desktop width: a sidebar counting Library 18 and Uncategorized 8 with Football, Humor and Relatable categories beneath it, a filter bar, and archived posts from the Relatable category each carrying its own archived timestamp.',
+        caption:
+          'The archive with records in it, and the first capture in this case study that shows a sync having run: the sidebar totals are non-zero, the categories carry counts, every post has its own archived timestamp, and the status line reads “Synced 2 minutes ago”. Two qualifications. The posts are unedited X content quoted as they were saved, so one of them is profane. And the categories were applied by hand through the review interface — the automatic pass described above still has no worker, so nothing here shows it running.',
+        width: 1916,
+        height: 872,
+      },
+      {
+        src: '/work/xvault/Screenshot%202026-10-16%20183016.png',
+        alt: 'The same Relatable category in the compact single-column layout at 480 pixels wide: four archived posts with their author, date and archived timestamp, and the All, Uncategorized, Football, Humor and Relatable filters.',
+        caption:
+          'The same four records in the compact layout, at 480 × 637. It is the pair to the capture above, so what it adds is the narrow composition rather than anything new about the archive — evidence that the layout is responsive, not that ingestion produced more.',
+        width: 480,
+        height: 637,
+      },
+      {
+        src: '/work/xvault/Screenshot%202026-10-16%20183431.png',
+        alt: 'The Football category in the compact layout, listing five bookmarks, the second of which is a post whose photograph has been saved and renders beneath its text.',
+        caption:
+          'The Football category, where one post’s photograph has been archived alongside its text. The case study claims the media bytes are copied rather than hotlinked, and an image rendering on the card is consistent with that without demonstrating it — the copy and the original look the same on screen. Each post carries an archived timestamp a few minutes old.',
+        width: 1917,
+        height: 870,
+      },
+      {
+        src: '/work/xvault/Screenshot%202026-10-16%20183055.png',
+        alt: 'The XVault sign-in screen at 352 pixels wide in dark theme: email and password fields, a Sign in button, and the line “Have an invite code? Create your account”.',
+        caption:
+          'The sign-in screen at 352 × 752 in dark theme, carrying the invite-code line that states the access model from the problem section on the screen where it applies. Included for the narrow layout and the dark theme; it says nothing about whether the gate is enforced, which is a question for the source rather than a screenshot.',
+        width: 352,
+        height: 752,
+      },
     ],
   },
   {
@@ -550,118 +539,20 @@ export const caseStudies: CaseStudy[] = [
     name: 'GhostPay',
     tier: 'featured',
     tagline: 'Payment collection from a spoken sentence',
-    status: 'In development — integration not verified on a device',
+    status: 'In development',
     summary:
       'A merchant says what they were paid and who paid it. The audio is transcribed, the amount and phone number are extracted, a checkout link is created with the payment provider and sent to the customer over WhatsApp — while the merchant gets a spoken confirmation in Nigerian Pidgin.',
-    role: 'Sole engineer — Cloud Functions backend and the Nuxt client with its Android shell',
-    period: '2026 — in development',
+    role: 'Frontend Engineer',
+    period: '2026',
     source:
       'GhostPay_BackendClient-main/ and GhostPay_Android_Nuxt/ (two repositories, inspected separately)',
     stack: [
-      'Firebase Cloud Functions v2',
       'TypeScript',
-      'Firestore',
       'Nuxt 4',
       'Vue 3',
       'Capacitor 8',
       'Kotlin',
-      'OpenAI Whisper',
-      'Gemini',
-      'Korapay',
       'WhatsApp Cloud API',
-      'YarnGPT',
-    ],
-    evidence: [
-      {
-        term: 'Backend',
-        detail:
-          'Firebase Cloud Functions v2 on Node 20. Seven functions are exported: six HTTP handlers and one schedule that runs every two minutes as a payment-status fallback.',
-        state: 'verified',
-      },
-      {
-        term: 'Data model',
-        detail:
-          'Three Firestore collections, written from the function bodies rather than declared in a schema: `transactions` keyed by the payment reference, `merchants` keyed by the normalised phone number, and an idempotency cache.',
-        state: 'verified',
-      },
-      {
-        term: 'Transcription',
-        detail:
-          'OpenAI `whisper-1` over `multipart/form-data`, with a prompt that names the register — Nigerian English, `k` meaning thousand, naira as the currency, and Nigerian mobile prefixes — and container extensions normalised before the upload.',
-        state: 'verified',
-      },
-      {
-        term: 'Intent extraction',
-        detail:
-          'Gemini `gemini-2.0-flash` returns JSON for amount, description and phone number, and the phone number is then checked against a Nigerian E.164 pattern rather than trusted.',
-        state: 'verified',
-      },
-      {
-        term: 'Payments',
-        detail:
-          'Korapay: charge initialisation, charge status and bank-account resolution, all against the live host with no sandbox branch in the code. Whether a charge moves real money is decided entirely by which key the environment supplies, and no key, example file or runtime config exists in the repository.',
-        state: 'partial',
-      },
-      {
-        term: 'Settlement to the merchant',
-        detail:
-          'Onboarding verifies a payout account and stores its number, bank code and resolved name. Those three fields are never read again: the charge body carries no subaccount, and no transfer or subaccount call exists anywhere. Funds would land in the platform account, not the merchant’s.',
-        state: 'partial',
-      },
-      {
-        term: 'Webhook verification',
-        detail:
-          'HMAC-SHA256 over the raw request body compared with a timing-safe equality check, refusing with an error when the secret is unset. This is properly done rather than stubbed.',
-        state: 'verified',
-      },
-      {
-        term: 'Customer notification',
-        detail:
-          'A WhatsApp Cloud API template message carrying the description and the checkout link, sent after the charge is created. It requires an approved template of that exact name on the business account, which nothing in either repository creates or evidences.',
-        state: 'partial',
-      },
-      {
-        term: 'Spoken confirmation',
-        detail:
-          'A text-to-speech call in Pidgin, uploaded to storage, and pushed to the device as a data payload that a native service plays on receipt.',
-        state: 'verified',
-      },
-      {
-        term: 'Android shell',
-        detail:
-          'Five Kotlin files: a foreground service with a persistent notification, a Quick Settings tile, a messaging service that plays the audio, a transparent overlay activity hosting the capture screen, and the Capacitor bridge activity.',
-        state: 'verified',
-      },
-      {
-        term: 'Push delivery',
-        detail:
-          'The Google Services configuration file is absent, so the build applies the plugin conditionally and Firebase never initialises. The whole confirmation path is dead in a clean build until that file is added.',
-        state: 'absent',
-      },
-      {
-        term: 'Client and backend agreement',
-        detail:
-          'The client treats an empty audio-feedback URL as a failed request; the function returns that field empty unconditionally, on a successful response too. A correct backend reply therefore throws in the client and the success state is unreachable.',
-        state: 'verified',
-      },
-      {
-        term: 'Transaction history',
-        detail:
-          'The client queries Firestore directly for `merchant_id` and `created_at`; the backend writes `merchantId` and `createdAt`. The client also never establishes a Firebase session, so the security rules would deny the read, and the compound query has no index configured. The history screen cannot return data as written.',
-        state: 'verified',
-      },
-      {
-        term: 'Tests',
-        detail:
-          'Two unit tests run without credentials — intent parsing and the fallback poller — both against mocks. Three further scripts are skipped without API keys, and one of those calls the provider directly rather than the deployed function. Nothing covers the ingest handler, the webhook, authentication or onboarding.',
-        state: 'partial',
-      },
-      {
-        term: 'Deployment',
-        detail:
-          'No compiled output, no installed dependencies, and the endpoints in the README are placeholders. A local Firestore emulator was run during development; nothing shows the functions were ever deployed.',
-        state: 'absent',
-      },
     ],
     sections: [
       {
@@ -678,6 +569,7 @@ export const caseStudies: CaseStudy[] = [
         heading: 'Architecture and data flow',
         paragraphs: [
           'The backend and the client are separate repositories with separate lifetimes. Everything decision-shaped happens in the functions; the client captures audio, holds a token and displays state.',
+          'This page describes the whole system, and it is worth being clear that the whole system is not one person’s work. Michael’s contribution is the client: the Nuxt 4 pages, the composables that capture audio and hold the merchant token, and the Capacitor 8 Android shell with its five Kotlin classes. The Cloud Functions backend, the Firestore data model and the provider integrations were built as part of the same project by other contributors, and the diagram below marks that division rather than flattening it. Author credit details are in the ledger above.',
         ],
         bullets: [
           'The merchant authenticates with a phone number and receives a signed token that the client stores and sends on each request.',
@@ -694,6 +586,12 @@ export const caseStudies: CaseStudy[] = [
         id: 'decisions',
         heading: 'Key implementation decisions',
         rows: [
+          {
+            term: 'Whose decisions these are',
+            detail:
+              'Stated before the list rather than after it: these were made across the team that built GhostPay, not by one person. Where a decision is specifically about the client — how audio is captured, how the token is held, how the native shell is wired — it is this author’s. The rest are recorded because a case study that described only half the system would leave the reader unable to follow the flow it just set out.',
+            state: 'reported',
+          },
           {
             term: 'Bias the transcription toward the register',
             detail:
@@ -817,10 +715,14 @@ export const caseStudies: CaseStudy[] = [
     links: [],
     captures: [
       'The capture overlay on a physical device, mid-recording — no capture exists',
-      'The confirmation notification and its audio path, shown only once a device run is recorded',
-      'The history screen, which currently cannot return data',
-      'An architecture diagram drawn only from the verified function call graph, once the flow itself is verified',
+      'The confirmation notification and the audio it plays, which need a recorded device run and a Google Services configuration that is not in the repository',
+      'The history screen, which as written cannot return data',
+      'Anything the merchant or the customer actually sees — no reply from the backend was ever observed arriving in the client',
     ],
+    diagram: {
+      caption:
+        'Drawn from both repositories, and honest about being drawn: this is a diagram of what the source says the system is, not a photograph of it running. It is here because a case study that describes six services and seven functions should show how they connect, and because the connection is the part most easily overstated. The ownership line is the point of it. The Nuxt and Capacitor client and its Android shell are this author’s; the Firebase functions, the data model and the provider work were done by other contributors to the same project; and the services at the bottom belong to nobody here. Where authorship could not be established from anything on disk, the node says so rather than being quietly folded into the rest.',
+    },
   },
   {
     slug: 'kene-portfolio',
@@ -834,44 +736,6 @@ export const caseStudies: CaseStudy[] = [
     period: '2025',
     source: 'Kene Portfolio/folio/',
     stack: ['Nuxt 3', 'Vue 3', 'Tailwind CSS', 'GSAP', 'EmailJS'],
-    evidence: [
-      {
-        term: 'Stack',
-        detail:
-          'Nuxt 3.17 with Vue 3.5 and Tailwind v4, with GSAP for the entrance animation and the browser-side EmailJS client for the contact form.',
-        state: 'verified',
-      },
-      {
-        term: 'Routes',
-        detail:
-          'Five file-based routes: a splash introduction, then about, skills, projects and contact. The introduction types a sentence and redirects to the about page after roughly six seconds.',
-        state: 'verified',
-      },
-      {
-        term: 'Content',
-        detail:
-          'Written for Donald Ebube, a data analyst: a prose bio, a tools list covering BigQuery, Looker Studio, Power BI and spreadsheets, four domains of expertise, three certificates linked to their real public pages, and six analysis projects whose cards link out to GitHub wikis and notebooks.',
-        state: 'verified',
-      },
-      {
-        term: 'Contact form',
-        detail:
-          'Client-side validation and a real EmailJS submission, with the service, template and public key read from environment configuration.',
-        state: 'verified',
-      },
-      {
-        term: 'Deployment',
-        detail:
-          'No host configuration of any kind exists in the repository — no platform config file, no custom domain, no CI workflow. Analytics and speed-insight packages in the layout imply a host, but an implication is not an address, so no live link is offered.',
-        state: 'absent',
-      },
-      {
-        term: 'Repository hygiene',
-        detail:
-          'A second headshot sits in the assets folder referenced by nothing in the code, and the skills and projects sidebar icons are named for each other’s routes. Cosmetic, but it is the kind of thing that makes the next edit slower.',
-        state: 'verified',
-      },
-    ],
     sections: [
       {
         id: 'problem',
@@ -978,7 +842,14 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    links: [],
+    links: [
+       {
+        label: 'data-with-donald.vercel.app',
+        href: 'https://data-with-donald.vercel.app',
+        note: 'The live deployment of the data-with-donald project.',
+        kind: 'live',
+      },
+    ],
     captures: [
       'The introduction screen mid-type, desktop and mobile',
       'The about page and its bio layout',
@@ -998,56 +869,6 @@ export const caseStudies: CaseStudy[] = [
     period: '2025',
     source: 'InvestmentFunds-main/',
     stack: ['Vue 3', 'Vite', 'Vuex 4', 'Axios', 'Tailwind CSS'],
-    evidence: [
-      {
-        term: 'Stack',
-        detail:
-          'Vue 3.5 on Vite 6, Vuex 4 for state and Axios for transport, styled with Tailwind v4.',
-        state: 'verified',
-      },
-      {
-        term: 'API integration',
-        detail:
-          'One unmocked request to an endpoint read from an environment variable, expecting a wrapped list of funds. There is no interceptor, no mock adapter and no bundled fixture data, so the application has nothing to show without a reachable endpoint.',
-        state: 'verified',
-      },
-      {
-        term: 'Endpoint',
-        detail:
-          'The variable is not set anywhere in the repository — there is no environment file, not even an example — so the address the demo talks to cannot be stated. Availability is therefore unknown and no public link is offered.',
-        state: 'absent',
-      },
-      {
-        term: 'Risk filtering',
-        detail:
-          'A real Vuex getter filters the catalogue on a selected risk level, with a mutation and an action feeding it. Three options are exposed.',
-        state: 'verified',
-      },
-      {
-        term: 'Risk labels',
-        detail:
-          'The dropdown offers Low, Medium and High while the card formatter renders the same three values as Conservative, Moderate and Aggressive. Both are real; they disagree.',
-        state: 'partial',
-      },
-      {
-        term: 'Pagination',
-        detail:
-          'Client-side only. Twenty funds are shown at a time behind a load-more control, with a second control to collapse back, and the count resets when the filter changes.',
-        state: 'verified',
-      },
-      {
-        term: 'Detail view',
-        detail:
-          'A routed detail page that re-derives its fund from the already-loaded store rather than fetching by identifier, so it depends on the list having been visited first. Minimum investment is a fixed figure written into the template rather than read from the record.',
-        state: 'partial',
-      },
-      {
-        term: 'Attribution',
-        detail:
-          'This is an independent demonstration against a public API, not official functionality. It carries the provider’s identity in several places — the package name, the page title, a page heading, a bundled logo and a default manager string — and one decorative logo is loaded directly from the provider’s own storage bucket rather than from the repository.',
-        state: 'verified',
-      },
-    ],
     sections: [
       {
         id: 'problem',
@@ -1132,7 +953,7 @@ export const caseStudies: CaseStudy[] = [
           {
             term: 'Not verified',
             detail:
-              'That the endpoint resolves, what the API returns, whether the demo renders at all today, and whether any of it was ever deployed. No environment configuration and no host configuration exist in the repository.',
+              'That the endpoint resolves, what the API returns, and whether the demo renders today. A deployment published from the repository was reachable when checked, but reachability is not the same as a working catalogue, and nothing here was exercised against the live API.',
             state: 'absent',
           },
         ],
@@ -1149,7 +970,20 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
     ],
-    links: [],
+    links: [
+      {
+        label: 'github.com/michaelebube/InvestmentFunds',
+        href: 'https://github.com/michaelebube/InvestmentFunds',
+        note: 'The public repository. Its package.json is named `cowrywiseinvestment` and pins vue ^3.5.13 with vuex, axios and Vite, matching what the claims above were checked against.',
+        kind: 'repo',
+      },
+      {
+        label: 'investment-funds-cw.vercel.app',
+        href: 'https://investment-funds-cw.vercel.app',
+        note: 'The deployment the repository links, which served the title “Cowrywise Investment Funds” when checked. Whether the API call behind it succeeds was not verified, and this is not an official Cowrywise product.',
+        kind: 'live',
+      },
+    ],
     captures: [
       'The fund list with results loaded, showing cards and the load-more control',
       'The risk filter in use, before and after',

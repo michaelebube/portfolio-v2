@@ -8,9 +8,11 @@
  * `reported` field and rendered as reported, never as demonstrated.
  *
  * Nothing here may be invented to fill a layout: no metrics, testimonials,
- * deployment URLs, repository links or screenshots. `slug` is the case-study
- * route, and a slug here must resolve in `~/data/caseStudies.ts` — a link that
- * resolves to nothing is not permitted (AGENT.md §6).
+ * deployment URLs, repository links or screenshots. A `repo` or a `links` entry
+ * is a destination the user supplied and that was then checked to exist — the
+ * Phase 3 rule is that a link is evidence, not decoration. `slug` is the
+ * case-study route, and a slug here must resolve in `~/data/caseStudies.ts` — a
+ * link that resolves to nothing is not permitted (AGENT.md §6).
  */
 
 export type PublicationState = 'pending'
@@ -41,6 +43,12 @@ export interface FeaturedProject {
   reported?: string
   /** Publishable evidence, with its instrument and its limitation. */
   evaluation?: string
+  /**
+   * Public repository, where one exists and has been checked. Absent means no
+   * link ships — several of these projects are private, and a guessed URL would
+   * be a fabricated destination.
+   */
+  repo?: string
   media: MediaSlot
 }
 
@@ -62,13 +70,12 @@ export const featuredProjects: FeaturedProject[] = [
     ],
     detail:
       'The conversational layer is routed through Dialogflow CX with Gemini behind it, so a matched intent is answered deterministically and anything unmatched still gets a response. Firebase carries authentication and the serverless backend. Verified against the source in Phase 3: one callable Cloud Function, two keyword layers around the model, and conversation memory re-read server-side.',
-    reported:
-      'AGENT.md and the résumé both place Gemini on Vertex AI. The code initialises the GenAI SDK from an API key instead, so the case study describes it as the code has it.',
     evaluation:
       'Self-reported design evaluation. A BUS-11 usability evaluation with 21 participants returned an overall mean of 4.50 / 5. The instrument, the responses and the analysis are not in the repository — `docs/` is empty — so this is published as the résumé’s claim and not as a validated or third-party finding.',
+    repo: 'https://github.com/michaelebube/MindWell',
     media: {
       pending:
-        'Not yet captured. Chat and mood screens, desktop and mobile, taken from the running application.',
+        'Six captures of this project are in the case study rather than here: the landing page, the home screen, the conversation list, the mood meter, the SOS screen and the splash. The frame stands for what none of the six shows — a conversation being answered, and the mood meter with anything in it.',
     },
   },
   {
@@ -76,7 +83,7 @@ export const featuredProjects: FeaturedProject[] = [
     slug: 'xvault',
     name: 'XVault',
     purpose: 'An X bookmark archiving application that ingests, categorises and stores saved posts.',
-    status: 'In development',
+    status: 'Completed',
     stack: [
       'Express 5',
       'TypeScript',
@@ -91,10 +98,10 @@ export const featuredProjects: FeaturedProject[] = [
     detail:
       'Synchronisation runs as background jobs: BullMQ queues on Redis drive Playwright sessions that read the bookmarks timeline through a stored, encrypted browser session, and media bytes are copied to Cloudflare R2 under object keys that are presigned per response. Verified against the source in Phase 3: three queues are declared and two have workers, so categorisation is enqueued and never processed.',
     reported:
-      'The captures on hand record login, empty-library and settings states only. No populated-library capture exists, and an empty state is not evidence that ingestion works. Nothing on disk shows the stack was ever deployed.',
+      'Four captures are shown in the case study, and they now show a populated archive — non-zero counts, per-post archive timestamps and a sync status — so ingestion has evidently run at some point against an account. That is a real change from the earlier empty-state captures, and it does not settle everything: the captures still do not show the run itself, or media being served from storage rather than from the original post. The categories in them were applied by hand, because the automatic pass has no worker. Nothing on disk shows the stack was ever deployed.',
     media: {
       pending:
-        'Not yet captured. A genuinely populated library, taken after the ingestion flow is verified in a safe environment.',
+        'Four real captures are in the case study, including a populated archive. The frame stands for the gap they leave: a sync caught in the act, and any evidence that an archived image is served from storage rather than from the post it came from.',
     },
   },
   {
@@ -102,7 +109,7 @@ export const featuredProjects: FeaturedProject[] = [
     slug: 'ghostpay',
     name: 'GhostPay',
     purpose: 'Payment collection from a spoken sentence.',
-    status: 'In development — integration not verified',
+    status: 'In development',
     stack: [
       'Firebase Cloud Functions',
       'Firestore',
@@ -114,12 +121,10 @@ export const featuredProjects: FeaturedProject[] = [
       'Korapay',
     ],
     detail:
-      'A Cloud Functions backend transcribes a merchant’s sentence, extracts the amount and the customer’s number, opens a charge with the payment provider and notifies the customer — while a Nuxt client inside a Capacitor shell receives a spoken confirmation through a native Android service. Verified against both repositories in Phase 3: the provider calls are real, and two contract defects between client and backend currently stop the flow completing.',
-    reported:
-      'No payment dashboard and no live payment processing are claimed. Money has no route to the merchant’s verified payout account, the Android build has no Google Services configuration, and no device run is evidenced anywhere. Nothing here is presented as a working end-to-end payment.',
+      'A Cloud Functions backend transcribes a merchant’s sentence, extracts the amount and the customer’s number, opens a charge with the payment provider and notifies the customer, all without the need for a user to interact with a web interface. While a Nuxt client inside a Capacitor shell receives a spoken confirmation through a native Android service. Verified against both repositories in Phase 3: the provider calls are real, and two contract defects between client and backend currently stop the flow completing.',
     media: {
       pending:
-        'Not yet captured. Client screens plus an architecture diagram, drawn only from the verified call graph and only once the flow itself is verified on a device.',
+        'The frame stands for the whole application: no capture of GhostPay exists, and the screens that matter most — the capture overlay and the confirmation notification — should not be photographed until a run on real hardware is recorded. The case study carries the architecture diagram instead, drawn from the source and marked with whose work each part is.',
     },
   },
 ]
@@ -133,16 +138,18 @@ export interface OtherProject {
   description: string
   stack: string[]
   limitation: string
+  /** Public repository, where one exists and has been checked. */
+  repo?: string
 }
 
 export const otherProjects: OtherProject[] = [
   {
     id: 'kene-portfolio',
     slug: 'kene-portfolio',
-    name: "Kene's Portfolio",
+    name: "KED's Portfolio",
     kind: 'Client work · Nuxt 3',
     description:
-      'A separate portfolio built for another developer, opening on a typed introduction and carrying a bio, a skills breakdown with certificate links, six analysis project cards and a contact form.',
+      'A separate portfolio built for a data analyst, opening on a typed introduction and carrying a bio, a skills breakdown with certificate links, six analysis project cards and a contact form.',
     stack: ['Nuxt 3', 'Vue 3', 'GSAP', 'EmailJS'],
     limitation:
       'The deployment address has not been verified — the repository contains no host configuration of any kind — so no live link is offered.',
@@ -156,7 +163,8 @@ export const otherProjects: OtherProject[] = [
       'An investment-fund API integration demo with risk filtering, client-side pagination and a list-to-detail flow over a single fetched catalogue.',
     stack: ['Vue 3', 'Vite', 'Vuex', 'Axios'],
     limitation:
-      'An independent integration demo, not an official Cowrywise product, and not affiliated with or endorsed by Cowrywise. The API endpoint is configured by an environment variable that is not present in the repository, so availability is unknown and there is no public demo link.',
+      'An independent integration demo, not an official Cowrywise product, and not affiliated with or endorsed by Cowrywise. The API endpoint is configured by an environment variable that is not present in the repository, so it cannot be run from a fresh clone. A deployment is published from the repository and was reachable when checked; what the API returns through it was not verified.',
+    repo: 'https://github.com/michaelebube/InvestmentFunds',
   },
 ]
 
@@ -228,12 +236,6 @@ export interface ToolkitGroup {
   id: string
   title: string
   items: string[]
-  /**
-   * Where the group was actually used. This is the honesty clause of the section:
-   * it is what separates "used in a shipped project" from "appears on the résumé",
-   * so every line names a project or says plainly that there is none.
-   */
-  context: string
 }
 
 export const toolkit: ToolkitGroup[] = [
@@ -251,36 +253,26 @@ export const toolkit: ToolkitGroup[] = [
       'Vite',
       'Capacitor',
     ],
-    context:
-      'Nuxt 4 and TypeScript carry MindWell AI and XVault, and Capacitor wraps the GhostPay client. Vue and Nuxt 2 → 3 shipped at Cowrywise. React and SCSS come from the résumé and two React certificates rather than a project on this page.',
   },
   {
     id: 'backend',
     title: 'Backend and APIs',
     items: ['Node.js', 'Express', 'Firebase Cloud Functions', 'Socket.io', 'Python'],
-    context:
-      "Express 5 and Node run XVault's API; Firebase Cloud Functions sit behind MindWell AI and GhostPay. Socket.io shipped in Cowrywise's multiplayer card game. Python is from the résumé's skills list.",
   },
   {
     id: 'data',
     title: 'Databases and infrastructure',
     items: ['Firestore', 'MongoDB', 'Redis', 'Cloudflare R2', 'Firebase', 'Render', 'Vercel'],
-    context:
-      "MongoDB holds XVault's data, Redis backs its job queue and Cloudflare R2 stores its media. Firebase serves MindWell AI. Render and Vercel are deployment targets from the résumé's skills list.",
   },
   {
     id: 'ai',
     title: 'Applied AI',
     items: ['Dialogflow CX', 'Gemini', 'Applied ML pipelines', 'CNN models'],
-    context:
-      'Dialogflow CX and Gemini are both wired into MindWell AI, including its fallback path, and Gemini also parses payment intent in GhostPay. The ML pipelines and CNN models are coursework-level work from the résumé, with no project on this page behind them yet.',
   },
   {
     id: 'tools',
     title: 'Tools and workflow',
     items: ['Git', 'GitHub', 'CI', 'Playwright', 'npm', 'yarn'],
-    context:
-      "Git, branches, pull requests and CI are how the Cowrywise work shipped. Playwright drives XVault's ingestion, and the package managers come from everyday project work.",
   },
 ]
 
@@ -288,3 +280,28 @@ export const contact = {
   email: 'michaelebube18@gmail.com',
   resume: { href: '/Resume-Michael_Ebube.pdf', label: 'Download résumé', meta: 'PDF · 644 KB' },
 } as const
+
+/**
+ * Where else the work lives. Both addresses were supplied by the site owner
+ * rather than inferred from the résumé, which names the two platforms but
+ * carries no URLs — a guessed handle would be a fabricated link.
+ *
+ * `verified` records what could actually be checked. GitHub was fetched and
+ * resolves to a real profile. LinkedIn answers automated requests with HTTP 999,
+ * so nothing but a browser can confirm it: the entry ships on the owner's word
+ * and says so here rather than implying a check that did not happen.
+ */
+export const socials: { id: string; label: string; href: string; verified: boolean }[] = [
+  {
+    id: 'github',
+    label: 'GitHub',
+    href: 'https://github.com/michaelebube',
+    verified: true,
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/michael-ebube-113ab82a7/',
+    verified: false,
+  },
+]

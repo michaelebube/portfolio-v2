@@ -152,13 +152,25 @@ const aboutIntro = [
             <p class="text-[1.125rem] leading-[1.6] text-ink">{{ project.description }}</p>
             <p class="mt-4 leading-[1.7] text-ink-muted">{{ project.stack.join(' · ') }}</p>
             <p class="mt-4 leading-[1.7] text-ink-muted">{{ project.limitation }}</p>
-            <NuxtLink
-              :to="`/work/${project.slug}`"
-              class="label-mono nav-link mt-5 inline-block"
-              :aria-label="`Read the ${project.name} case study`"
-            >
-              Read the case study
-            </NuxtLink>
+            <div class="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
+              <NuxtLink
+                :to="`{{ project.liveSite }}`"
+                class="label-mono nav-link"
+                :aria-label="`Visit the ${project.name} live site`"
+              >
+                Live Site
+              </NuxtLink>
+
+              <a
+                v-if="project.repo"
+                :href="project.repo"
+                class="label-mono nav-link inline-flex items-center gap-2"
+                :aria-label="`${project.name} source on GitHub`"
+              >
+                <GitHubMark />
+                GitHub
+              </a>
+            </div>
           </div>
         </article>
       </div>
@@ -256,16 +268,8 @@ const aboutIntro = [
               {{ item }}
             </li>
           </ul>
-
-          <p class="mt-5 leading-[1.7] text-ink-muted">{{ group.context }}</p>
         </div>
       </div>
-
-      <p class="measure mt-12 leading-[1.7] text-ink-muted" data-reveal>
-        Listed from the résumé, read 2026-10-16, and now qualified against the project source
-        itself. Depth varies by project; each case study names what was used where, and exposure to
-        a tool is never presented as production expertise.
-      </p>
     </SectionShell>
 
     <!-- 8 · Contact and footer -->

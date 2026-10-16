@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CLAIM_PRESENTATION, findCaseStudy } from '~/data/caseStudies'
+import {  findCaseStudy } from '~/data/caseStudies'
 
 /**
  * The one case-study template. Every project route renders through this file;
@@ -48,6 +48,23 @@ const meta = computed(() => {
     { term: 'Period', detail: entry.period },
     { term: 'Verified against', detail: entry.source },
   ]
+})
+
+/**
+ * What the captures section says about itself.
+ *
+ * GhostPay has no screenshots — none exist that would be honest to show — so
+ * its lead has to explain why a diagram is standing where a picture would be.
+ * A project with captures gets the opposite warning instead: what a screenshot
+ * is actually worth, which is less than it looks.
+ */
+const figuresLead = computed(() => {
+  const entry = study.value
+  if (!entry) return ''
+  if (entry.figures?.length) {
+    return 'Real captures of a build of this project, shown at the size they were taken. Every caption says what its image shows and what it does not — an empty state proves that a screen renders, and nothing beyond it.'
+  }
+  return 'No screenshot of this project is shown, because none exists that would be honest to show. The diagram below is drawn from the inspected source: it says how the parts connect and whose work each one is, not that the system runs.'
 })
 </script>
 
@@ -105,45 +122,6 @@ const meta = computed(() => {
       </p>
     </div>
 
-    <!-- =====================================================================
-         Claim ledger. The page's signature device: every load-bearing claim
-         sits beside the state it actually has. Solid surface throughout — this
-         is a table of record and it has to be scannable down a column.
-         ===================================================================== -->
-    <section class="container-page mt-16 md:mt-24" aria-labelledby="claims-heading">
-      <div class="grid gap-6 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-3">
-          <h2 id="claims-heading" class="text-[clamp(1.375rem,2.4vw,1.75rem)]" data-reveal>
-            What holds up
-          </h2>
-          <p class="mt-4 text-[0.9375rem] leading-[1.6] text-ink-muted" data-reveal>
-            Each line below was checked against the project's own source. The mark shows how far
-            the claim is proven, and the word says the same thing, so the state survives being
-            read in monochrome.
-          </p>
-        </div>
-
-        <dl class="border-t border-line lg:col-span-8 lg:col-start-5">
-          <div
-            v-for="(row, index) in study.evidence"
-            :key="row.term"
-            class="grid gap-2 border-b border-line py-5 sm:grid-cols-12 sm:gap-6"
-            data-reveal
-            :style="{ '--reveal-step': Math.min(index, 3) + 1 }"
-          >
-            <dt class="sm:col-span-4">
-              <span class="block text-ink">{{ row.term }}</span>
-              <GlassChip
-                class="mt-3"
-                :label="CLAIM_PRESENTATION[row.state].label"
-                :mark="CLAIM_PRESENTATION[row.state].mark"
-              />
-            </dt>
-            <dd class="leading-[1.7] text-ink-muted sm:col-span-8">{{ row.detail }}</dd>
-          </div>
-        </dl>
-      </div>
-    </section>
 
     <!-- =====================================================================
          The eight parts, six of them here. Solid, editorial, heading rail.
@@ -174,6 +152,82 @@ const meta = computed(() => {
     </section>
 
     <!-- =====================================================================
+         From the running build. The evidence that exists, placed before the
+         list of what does not, because a reader who has just been told what is
+         unproven is owed the sight of what is proven.
+
+         Every caption states what its image does and does not show. That is not
+         a stylistic tic: a screenshot is the most persuasive and least examined
+         kind of evidence on a page like this, and several of the captures below
+         are empty states that prove a screen renders and nothing else.
+         ===================================================================== -->
+    <section
+      v-if="study.figures?.length || study.diagram"
+      class="container-page mt-16 md:mt-24"
+      aria-labelledby="build-heading"
+    >
+      <div class="grid gap-6 border-t border-line pt-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-3">
+          <h2 id="build-heading" class="text-[clamp(1.375rem,2.4vw,1.75rem)]" data-reveal>
+            From the running build
+          </h2>
+          <p class="mt-4 text-[0.9375rem] leading-[1.6] text-ink-muted" data-reveal>
+            {{ figuresLead }}
+          </p>
+        </div>
+
+        <div class="lg:col-span-8 lg:col-start-5" data-reveal>
+          <!-- The only diagram on the site. If a second project needs one, the
+               component name belongs in the data at that point; a map of one
+               entry here would be indirection without a second caller. -->
+          <figure v-if="study.diagram">
+            <GhostPayArchitecture />
+            <figcaption class="mt-7 border-t border-line pt-5 leading-[1.7] text-ink-muted">
+              {{ study.diagram.caption }}
+            </figcaption>
+          </figure>
+
+          <!-- One figure per row. The captures are application screenshots
+               between 350 and 1917 pixels wide, and a two-column grid puts the
+               wide ones at a quarter scale — legible as a shape and useless as
+               the evidence the caption beside it is describing. They stack
+               instead, at the full width of this column; a capture taken at
+               phone width caps itself rather than stretching, which is what
+               `figure.phone` is for. -->
+          <ul
+            v-if="study.figures?.length"
+            class="space-y-12"
+            :class="study.diagram ? 'mt-12' : ''"
+          >
+            <li
+              v-for="figure in study.figures"
+              :key="figure.src"
+              :class="figure.phone ? 'max-w-[16rem]' : ''"
+            >
+              <figure>
+                <!-- Width and height are carried so the browser reserves the
+                     right box before the file lands, and the image is never
+                     stretched past the size it was taken at. -->
+                <img
+                  :src="figure.src"
+                  :alt="figure.alt"
+                  :width="figure.width"
+                  :height="figure.height"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-auto w-full border border-line"
+                >
+                <figcaption class="mt-4 leading-[1.7] text-ink-muted">
+                  {{ figure.caption }}
+                </figcaption>
+              </figure>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
          What is still missing. Stated on the page rather than left for the
          reader to notice — an absent capture is information about a project.
          ===================================================================== -->
@@ -181,12 +235,14 @@ const meta = computed(() => {
       <div class="grid gap-6 border-t border-line pt-10 lg:grid-cols-12 lg:gap-16">
         <div class="lg:col-span-3">
           <h2 id="captures-heading" class="text-[clamp(1.375rem,2.4vw,1.75rem)]" data-reveal>
-            Not yet captured
+            {{ study.figures?.length ? 'Still to capture' : 'Not yet captured' }}
           </h2>
           <p class="mt-4 text-[0.9375rem] leading-[1.6] text-ink-muted" data-reveal>
-            No screenshot, recording or diagram of this project is shown anywhere on this page,
-            because none exists that would be honest to show. This is what would need to be taken
-            from a running build.
+            {{
+              study.figures?.length
+                ? 'The captures above are the ones that exist. These are the ones that would still have to be taken from a running build, and an empty state is not a substitute for any of them.'
+                : 'No screenshot, recording or diagram of this project is shown anywhere on this page, because none exists that would be honest to show. This is what would need to be taken from a running build.'
+            }}
           </p>
         </div>
 
@@ -216,7 +272,12 @@ const meta = computed(() => {
         <div class="lg:col-span-8 lg:col-start-5" data-reveal>
           <ul v-if="study.links.length" class="space-y-4">
             <li v-for="link in study.links" :key="link.href" class="border-b border-line pb-4">
-              <a :href="link.href" class="text-ink underline underline-offset-4" rel="noopener">
+              <a
+                :href="link.href"
+                class="inline-flex items-center gap-2 text-ink underline underline-offset-4"
+                rel="noopener"
+              >
+                <GitHubMark v-if="link.kind === 'repo'" />
                 {{ link.label }}
               </a>
               <p class="mt-2 leading-[1.7] text-ink-muted">{{ link.note }}</p>

@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { contact } from '~/data/portfolio'
+import { contact, socials } from '~/data/portfolio'
 
 /**
  * The footer is a designed close, not a sitemap (AGENT.md §7 puts the contact
  * invitation here, with the résumé and navigation).
  *
- * No social links ship: the résumé names GitHub and LinkedIn but carries no URLs,
- * so neither destination has been verified, and a guessed handle would be a
- * fabricated link (PRODUCT.md, "Open decisions"). Email and the résumé PDF are
- * the two verified routes, and both are real files or real addresses.
+ * The two profile links are supplied by the site owner, not inferred: the
+ * résumé names GitHub and LinkedIn but carries no URLs, so before Phase 3 there
+ * was nothing to link to and a guessed handle would have been a fabricated
+ * destination. GitHub was fetched and resolves to a real profile. LinkedIn
+ * answers automated requests with HTTP 999, so it could not be checked with any
+ * tool available here — it ships on the owner's word, and `socials` records
+ * which of the two that applies to rather than implying both were verified.
  *
  * The colophon credits the two typefaces because Disket Mono's licence welcomes
  * it and the body face is OFL — and because type provenance is the kind of
@@ -48,6 +51,18 @@ const footerLinks = [
           </div>
 
           <p class="label-mono mt-5">{{ contact.email }} · {{ contact.resume.meta }}</p>
+
+          <!-- Same row shape as the hero's discipline list: monospace labels on
+               a single line, no boxes. The mark is decorative — each link's own
+               text is its accessible name. -->
+          <ul class="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3" data-reveal :style="{ '--reveal-step': 3 }">
+            <li v-for="social in socials" :key="social.id">
+              <a :href="social.href" class="label-mono nav-link inline-flex items-center gap-2">
+                <GitHubMark v-if="social.id === 'github'" />
+                {{ social.label }}
+              </a>
+            </li>
+          </ul>
         </div>
 
         <nav class="lg:col-span-5 lg:col-start-9" aria-label="Footer">
