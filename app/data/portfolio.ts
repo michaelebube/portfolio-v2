@@ -10,9 +10,9 @@
  * Nothing here may be invented to fill a layout: no metrics, testimonials,
  * deployment URLs, repository links or screenshots. A `repo` or a `links` entry
  * is a destination the user supplied and that was then checked to exist — the
- * Phase 3 rule is that a link is evidence, not decoration. `slug` is the
- * case-study route, and a slug here must resolve in `~/data/caseStudies.ts` — a
- * link that resolves to nothing is not permitted (AGENT.md §6).
+ * Phase 3 rule is that a link is evidence, not decoration. Featured projects
+ * have case-study routes; smaller projects link directly to their verified
+ * applications and repositories.
  */
 
 export type PublicationState = 'pending'
@@ -70,8 +70,6 @@ export const featuredProjects: FeaturedProject[] = [
     ],
     detail:
       'The conversational layer is routed through Dialogflow CX with Gemini behind it, so a matched intent is answered deterministically and anything unmatched still gets a response. Firebase carries authentication and the serverless backend. Verified against the source in Phase 3: one callable Cloud Function, two keyword layers around the model, and conversation memory re-read server-side.',
-    evaluation:
-      'Self-reported design evaluation. A BUS-11 usability evaluation with 21 participants returned an overall mean of 4.50 / 5. The instrument, the responses and the analysis are not in the repository — `docs/` is empty — so this is published as the résumé’s claim and not as a validated or third-party finding.',
     repo: 'https://github.com/michaelebube/MindWell',
     media: {
       pending:
@@ -83,7 +81,7 @@ export const featuredProjects: FeaturedProject[] = [
     slug: 'xvault',
     name: 'XVault',
     purpose: 'An X bookmark archiving application that ingests, categorises and stores saved posts.',
-    status: 'Completed',
+    status: 'Personal Tool',
     stack: [
       'Express 5',
       'TypeScript',
@@ -111,14 +109,9 @@ export const featuredProjects: FeaturedProject[] = [
     purpose: 'Payment collection from a spoken sentence.',
     status: 'In development',
     stack: [
-      'Firebase Cloud Functions',
-      'Firestore',
       'Nuxt 4',
       'Capacitor',
       'Kotlin',
-      'Whisper',
-      'Gemini',
-      'Korapay',
     ],
     detail:
       'A Cloud Functions backend transcribes a merchant’s sentence, extracts the amount and the customer’s number, opens a charge with the payment provider and notifies the customer, all without the need for a user to interact with a web interface. While a Nuxt client inside a Capacitor shell receives a spoken confirmation through a native Android service. Verified against both repositories in Phase 3: the provider calls are real, and two contract defects between client and backend currently stop the flow completing.',
@@ -131,39 +124,35 @@ export const featuredProjects: FeaturedProject[] = [
 
 export interface OtherProject {
   id: string
-  /** Case-study route: `/work/<slug>`, resolved from `caseStudies.ts`. */
-  slug: string
   name: string
   kind: string
   description: string
   stack: string[]
-  limitation: string
-  /** Public repository, where one exists and has been checked. */
-  repo?: string
+  /** Verified deployed application. */
+  liveSite: string
+  /** Verified public repository. */
+  repo: string
 }
 
 export const otherProjects: OtherProject[] = [
   {
     id: 'kene-portfolio',
-    slug: 'kene-portfolio',
     name: "KED's Portfolio",
     kind: 'Client work · Nuxt 3',
     description:
       'A separate portfolio built for a data analyst, opening on a typed introduction and carrying a bio, a skills breakdown with certificate links, six analysis project cards and a contact form.',
     stack: ['Nuxt 3', 'Vue 3', 'GSAP', 'EmailJS'],
-    limitation:
-      'The deployment address has not been verified — the repository contains no host configuration of any kind — so no live link is offered.',
+    liveSite: 'https://data-with-donald.vercel.app',
+    repo: 'https://github.com/michaelebube/Portfolio-Donald',
   },
   {
     id: 'investment-funds',
-    slug: 'investment-fund-demo',
     name: 'Investment Fund Demo',
     kind: 'Independent project · Vue 3',
     description:
       'An investment-fund API integration demo with risk filtering, client-side pagination and a list-to-detail flow over a single fetched catalogue.',
     stack: ['Vue 3', 'Vite', 'Vuex', 'Axios'],
-    limitation:
-      'An independent integration demo, not an official Cowrywise product, and not affiliated with or endorsed by Cowrywise. The API endpoint is configured by an environment variable that is not present in the repository, so it cannot be run from a fresh clone. A deployment is published from the repository and was reachable when checked; what the API returns through it was not verified.',
+    liveSite: 'https://investment-funds-cw.vercel.app/',
     repo: 'https://github.com/michaelebube/InvestmentFunds',
   },
 ]
@@ -216,7 +205,7 @@ export const credentials: Credential[] = [
   },
   {
     id: 'christ-college',
-    institution: 'Christ College Lagos',
+    institution: 'Christ College',
     qualification: 'Senior Secondary School Certificate (Science)',
     location: 'Lagos, Nigeria',
     period: '2019 — 2022',
@@ -229,7 +218,6 @@ export const aboutFacts: { term: string; detail: string }[] = [
   { term: 'Cumulative GPA', detail: '4.97 / 5.0' },
   { term: 'Experience', detail: 'Cowrywise (YC S18) — Engineering Intern, Frontend, 2025' },
   { term: 'Working across', detail: 'Frontend engineering, backend systems, applied AI' },
-  { term: 'Source', detail: 'Résumé, read 2026-10-16' },
 ]
 
 export interface ToolkitGroup {

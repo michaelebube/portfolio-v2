@@ -6,7 +6,7 @@ import {
   otherProjects,
   roles,
   toolkit,
-} from '~/data/portfolio'
+} from "~/data/portfolio";
 
 /**
  * Phase 2 homepage. Section order is fixed by AGENT.md §7, and every section
@@ -21,15 +21,15 @@ import {
  * Type sizes come from one small scale — 11 / 12 / 14 / 16 / 18, then the three
  * display steps — so the page reads as a system rather than a pile of choices.
  */
-const disciplines = ['Software', 'Systems', 'Applied AI']
+const disciplines = ["Software", "Systems", "Applied AI"];
 
-useRevealOnScroll()
+useRevealOnScroll();
 
 const aboutIntro = [
-  'I am in my final year of Computer Science at Covenant University, and I spent six months on the frontend team at Cowrywise (YC S18), migrating the main web platform from Nuxt 2 to Nuxt 3, refactoring legacy components into a modular architecture, and building responsive interfaces for Cowrywise Kids.',
-  'Most of my work sits between the interface and the systems behind it: Nuxt and Vue at the front, Node, Express and Firebase underneath, applied AI through Dialogflow CX and Gemini. My final-year project, MindWell AI, puts those pieces together for Nigerian university students.',
-  'I care about the reasoning as much as the result — what was tried, what was rejected, and what still does not work. Every project below is labelled with what has actually been verified, because a portfolio that survives inspection is more useful than one that only reads well.',
-]
+  "I am in my final year of Computer Science at Covenant University, and I spent six months on the frontend team at Cowrywise (YC S18), migrating the main web platform from Nuxt 2 to Nuxt 3, refactoring legacy components into a modular architecture, and building responsive interfaces for Cowrywise Kids.",
+  "Most of my work sits between the interface and the systems behind it: Nuxt and Vue at the front, Node, Express and Firebase underneath, applied AI through Dialogflow CX and Gemini. My final-year project, MindWell AI, puts those pieces together for Nigerian university students.",
+  "I care about the reasoning as much as the result — what was tried, what was rejected, and what still does not work. Every project below is labelled with what has actually been verified, because a portfolio that survives inspection is more useful than one that only reads well.",
+];
 </script>
 
 <template>
@@ -48,8 +48,8 @@ const aboutIntro = [
         <h1 class="text-[clamp(2.625rem,9vw,5.5rem)]">Ebube Michael</h1>
 
         <p class="measure mt-7 text-[1.125rem] leading-[1.6] text-ink-muted">
-          I build thoughtful software products, from user-facing experiences to the systems behind
-          them.
+          I build thoughtful software products, from user-facing experiences to
+          the systems behind them.
         </p>
 
         <ul class="disciplines label-mono mt-8">
@@ -75,11 +75,7 @@ const aboutIntro = [
          3 · About — prose left, verified facts right.
          The cumulative GPA lives here and nowhere else (AGENT.md §11).
          ===================================================================== -->
-    <SectionShell
-      id="about"
-      heading="About"
-      meta="Background · read from the résumé, 2026-10-16"
-    >
+    <SectionShell id="about" heading="About">
       <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div class="space-y-5 lg:col-span-7">
           <p
@@ -93,7 +89,11 @@ const aboutIntro = [
           </p>
         </div>
 
-        <dl class="lg:col-span-4 lg:col-start-9" data-reveal :style="{ '--reveal-step': 2 }">
+        <dl
+          class="lg:col-span-4 lg:col-start-9"
+          data-reveal
+          :style="{ '--reveal-step': 2 }"
+        >
           <div
             v-for="fact in aboutFacts"
             :key="fact.term"
@@ -110,13 +110,8 @@ const aboutIntro = [
          4 · Selected Work — alternating editorial media-and-text rows.
          MindWell AI leads because it carries the most verified material.
          ===================================================================== -->
-    <SectionShell
-      id="work"
-      heading="Selected Work"
-      meta="Three projects · status stated per entry"
-      lead="Each entry states what the project is, what it was built with, and what has been verified. Where evidence does not exist yet, the page says so rather than illustrating it."
-    >
-      <div class="space-y-16 lg:space-y-20">
+    <SectionShell id="work" heading="Selected Work">
+      <div class="space-y-22 lg:space-y-32">
         <ProjectShowcase
           v-for="(project, index) in featuredProjects"
           :key="project.id"
@@ -130,11 +125,7 @@ const aboutIntro = [
          5 · Other Projects — stacked rows, a different shape from Selected Work
          on purpose, and presented at the depth their evidence supports.
          ===================================================================== -->
-    <SectionShell
-      id="other"
-      heading="Other Projects"
-      meta="Smaller builds · links withheld until verified"
-    >
+    <SectionShell id="other" heading="Other Projects">
       <div>
         <article
           v-for="(project, index) in otherProjects"
@@ -144,31 +135,38 @@ const aboutIntro = [
           :style="{ '--reveal-step': index + 1 }"
         >
           <div class="lg:col-span-4">
-            <h3 class="text-[clamp(1.375rem,2.6vw,1.875rem)]">{{ project.name }}</h3>
+            <h3 class="text-[clamp(1.375rem,2.6vw,1.875rem)]">
+              {{ project.name }}
+            </h3>
             <p class="label-mono mt-3">{{ project.kind }}</p>
           </div>
 
           <div class="lg:col-span-7 lg:col-start-6">
-            <p class="text-[1.125rem] leading-[1.6] text-ink">{{ project.description }}</p>
-            <p class="mt-4 leading-[1.7] text-ink-muted">{{ project.stack.join(' · ') }}</p>
-            <p class="mt-4 leading-[1.7] text-ink-muted">{{ project.limitation }}</p>
-            <div class="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
-              <NuxtLink
-                :to="`{{ project.liveSite }}`"
-                class="label-mono nav-link"
+            <p class="text-[1.125rem] leading-[1.6] text-ink">
+              {{ project.description }}
+            </p>
+            <p class="mt-4 leading-[1.7] text-ink-muted">
+              {{ project.stack.join(" · ") }}
+            </p>
+            <div class="mt-5 flex flex-wrap items-center gap-3">
+              <a
+                :href="project.liveSite"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary"
                 :aria-label="`Visit the ${project.name} live site`"
               >
-                Live Site
-              </NuxtLink>
+                Live Application
+              </a>
 
               <a
-                v-if="project.repo"
                 :href="project.repo"
-                class="label-mono nav-link inline-flex items-center gap-2"
-                :aria-label="`${project.name} source on GitHub`"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary"
+                :aria-label="`${project.name} source repository`"
               >
-                <GitHubMark />
-                GitHub
+                Repository
               </a>
             </div>
           </div>
@@ -181,11 +179,7 @@ const aboutIntro = [
          DOM and first on a wide screen, so a phone reads the role before its
          dates rather than a label before a heading.
          ===================================================================== -->
-    <SectionShell
-      id="experience"
-      heading="Experience"
-      meta="Cowrywise · March 2025 — September 2025"
-    >
+    <SectionShell id="experience" heading="Experience">
       <div class="space-y-14">
         <article
           v-for="role in roles"
@@ -194,11 +188,19 @@ const aboutIntro = [
           data-reveal
         >
           <div class="lg:col-span-8 lg:col-start-5 lg:row-start-1">
-            <h3 class="text-[clamp(1.375rem,2.6vw,1.875rem)]">{{ role.role }}</h3>
-            <p class="mt-3 text-[1.125rem] leading-[1.6] text-ink">{{ role.organisation }}</p>
-            <p class="measure mt-4 leading-[1.7] text-ink-muted">{{ role.summary }}</p>
+            <h3 class="text-[clamp(1.375rem,2.6vw,1.875rem)]">
+              {{ role.role }}
+            </h3>
+            <p class="mt-3 text-[1.125rem] leading-[1.6] text-ink">
+              {{ role.organisation }}
+            </p>
+            <p class="measure mt-4 leading-[1.7] text-ink-muted">
+              {{ role.summary }}
+            </p>
 
-            <ul class="mt-6 max-w-[64ch] list-disc space-y-3 pl-5 leading-[1.7] text-ink-muted">
+            <ul
+              class="mt-6 max-w-[64ch] list-disc space-y-3 pl-5 leading-[1.7] text-ink-muted"
+            >
               <li v-for="point in role.points" :key="point">
                 {{ point }}
               </li>
@@ -264,7 +266,11 @@ const aboutIntro = [
           <h3 class="text-[1.125rem] leading-[1.4]">{{ group.title }}</h3>
 
           <ul class="mt-4 space-y-1.5">
-            <li v-for="item in group.items" :key="item" class="leading-[1.6] text-ink">
+            <li
+              v-for="item in group.items"
+              :key="item"
+              class="leading-[1.6] text-ink"
+            >
               {{ item }}
             </li>
           </ul>

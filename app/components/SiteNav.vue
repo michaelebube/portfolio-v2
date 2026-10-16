@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { contact } from '~/data/portfolio'
+
 interface NavLink {
   label: string
   href: string
@@ -90,27 +92,37 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
         <div class="flex h-14 items-center justify-between gap-6 md:h-16">
           <NuxtLink to="/" class="wordmark" aria-label="MIKO — home">MIKO</NuxtLink>
 
-          <ul class="hidden items-center gap-7 md:flex">
-            <li v-for="link in links" :key="link.href">
-              <a
-                :href="sectionHref(link.href)"
-                class="nav-link"
-                :class="{ 'is-active': activeId === link.href.slice(1) }"
-                :aria-current="activeId === link.href.slice(1) ? 'true' : undefined"
-                >{{ link.label }}</a
-              >
-            </li>
-          </ul>
+          <div class="ml-auto flex items-center gap-3">
+            <ul class="hidden items-center gap-7 md:flex">
+              <li v-for="link in links" :key="link.href">
+                <a
+                  :href="sectionHref(link.href)"
+                  class="nav-link"
+                  :class="{ 'is-active': activeId === link.href.slice(1) }"
+                  :aria-current="activeId === link.href.slice(1) ? 'true' : undefined"
+                  >{{ link.label }}</a
+                >
+              </li>
+            </ul>
 
-          <button
-            type="button"
-            class="label-mono -mr-1 inline-flex min-h-11 items-center px-2 text-ink md:hidden"
-            :aria-expanded="isOpen"
-            aria-controls="primary-nav-mobile"
-            @click="isOpen = !isOpen"
-          >
-            {{ isOpen ? 'Close' : 'Menu' }}
-          </button>
+            <a
+              class="btn btn-secondary hidden md:inline-flex"
+              :href="contact.resume.href"
+              type="application/pdf"
+            >
+              {{ contact.resume.label }}
+            </a>
+
+            <button
+              type="button"
+              class="label-mono -mr-1 inline-flex min-h-11 items-center px-2 text-ink md:hidden"
+              :aria-expanded="isOpen"
+              aria-controls="primary-nav-mobile"
+              @click="isOpen = !isOpen"
+            >
+              {{ isOpen ? 'Close' : 'Menu' }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -128,6 +140,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
               @click="closeMenu"
             >
               {{ link.label }}
+            </a>
+          </li>
+          <li class="py-3">
+            <a
+              :href="contact.resume.href"
+              class="btn btn-secondary w-full"
+              type="application/pdf"
+              @click="closeMenu"
+            >
+              {{ contact.resume.label }}
             </a>
           </li>
         </ul>

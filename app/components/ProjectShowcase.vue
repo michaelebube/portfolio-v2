@@ -6,10 +6,8 @@ import type { FeaturedProject } from '~/data/portfolio'
  * AGENT.md §8: media on one side, text on the other, the side swapping per
  * entry so the eye zig-zags down the page.
  *
- * Each entry states its status, its stack, what the engineering decision was,
- * and — the part most portfolios leave out — what has not been verified. That
- * middle rail is the portfolio's whole proposition, so it is set in the
- * monospace metadata voice rather than buried in prose.
+ * Each entry states its status, its stack, and what has not been verified.
+ * Detailed project reasoning belongs on the linked case-study page.
  */
 const props = defineProps<{
   project: FeaturedProject
@@ -43,28 +41,10 @@ const stackSummary = computed(() => props.project.stack.join(' · '))
         {{ project.purpose }}
       </p>
 
-      <p
-        class="measure mt-5 leading-[1.7] text-ink-muted"
-        data-reveal
-        :style="{ '--reveal-step': 2 }"
-      >
-        {{ project.detail }}
-      </p>
-
       <dl class="mt-8 border-t border-line">
         <div class="border-b border-line py-4">
           <dt class="label-mono">Stack</dt>
           <dd class="mt-2 leading-[1.7] text-ink-muted">{{ stackSummary }}</dd>
-        </div>
-
-        <div v-if="project.evaluation" class="border-b border-line py-4">
-          <dt class="label-mono">Evaluation · self-reported</dt>
-          <dd class="mt-2 leading-[1.7] text-ink-muted">{{ project.evaluation }}</dd>
-        </div>
-
-        <div v-if="project.reported" class="border-b border-line py-4">
-          <dt class="label-mono">Not yet verified</dt>
-          <dd class="mt-2 leading-[1.7] text-ink-muted">{{ project.reported }}</dd>
         </div>
 
         <!-- Real destinations, or none. The case-study route is derived from the

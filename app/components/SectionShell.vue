@@ -14,9 +14,6 @@ const props = defineProps<{
   /** Display heading. Source case is irrelevant — Disket Mono is caps-only. */
   heading: string
   /** Mono rail on the right. Keep it under ~48 characters. */
-  meta: string
-  /** Optional one-sentence lead under the heading. */
-  lead?: string
 }>()
 
 const headingId = computed(() => `${props.id}-heading`)
@@ -36,17 +33,10 @@ const headingId = computed(() => `${props.id}-heading`)
       <!-- A section number was tried here and removed: the numbering was
            ornamental rather than a real sequence, and the scroll-spy in the
            navigation already tells the reader where they are. -->
-      <p class="label-mono">{{ meta }}</p>
+     
     </div>
 
-    <p
-      v-if="lead"
-      class="measure mt-7 text-[1.125rem] leading-[1.6] text-ink-muted"
-      data-reveal
-      :style="{ '--reveal-step': 1 }"
-    >
-      {{ lead }}
-    </p>
+   
 
     <div class="mt-10 md:mt-14">
       <slot />
