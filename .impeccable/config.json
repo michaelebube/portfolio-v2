@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "geist",
+        "createdAt": "2026-10-16T01:24:20.667Z",
+        "reason": "user confirmed: Phase 1 review 2026-10-16 chose Geist as the body face; self-hosted from geist@1.7.2, no dependency added"
+      }
+    ]
+  }
+}

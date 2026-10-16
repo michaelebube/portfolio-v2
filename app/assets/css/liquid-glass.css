@@ -1,0 +1,177 @@
+/*!
+ * Liquid Glass — the CSS half: tint, rim, and the ambient field the glass has
+ * something to show. Adapted for this portfolio from the `liquid-glass` skill's
+ * `assets/liquid-glass.css`.
+ *
+ * Three deliberate departures from the skill's file, each driven by a binding
+ * constraint in AGENT.md rather than by taste:
+ *
+ * 1. DARK ONLY. The skill keys two themes off `html[data-theme]` and ships a
+ *    boot script plus a `prefers-color-scheme` fallback block. This site is
+ *    single-theme — `color-scheme: dark` is set globally — so all three are
+ *    dropped rather than carried as dead branches.
+ * 2. SQUARE CORNERS. The skill's radii (12 / 20 / pill) are its own idiom. The
+ *    pinned direction contract for this portfolio is square corners and 1px
+ *    hairlines, so every radius here is 0. The refraction field is computed
+ *    from the *computed* radius, so the SDF simply becomes a plain rectangle —
+ *    the rim lens still works, and the result reads as an edge-lit technical
+ *    panel rather than an Apple pill.
+ * 3. NO CAST SHADOW ON THE PANEL TIER. The skill's panel carries a drop shadow.
+ *    The panels here sit in the document flow rather than floating over it, and
+ *    a cast shadow is the vocabulary for things that do float — menus, dialogs,
+ *    sticky bars. On a near-black page it is also close to invisible: the
+ *    ambient field tops out around 8/255 luminance, so there is almost nothing
+ *    for a 40% black shadow to darken. The panel separates from the page by its
+ *    fill, its 1px border and its inset rim instead, all of which stay. The menu
+ *    tier keeps its shadow, because the sticky bar genuinely does float.
+ * 4. MONOCHROME MESH. SKILL.md requires an ambient field, because glass over a
+ *    flat fill has nothing to show and renders as a grey box. Its field is
+ *    coloured (violet / pink / cyan). AGENT.md §5 forbids a permanent accent
+ *    colour and warns off gradient decoration, so the recipe's *structure* is
+ *    kept — five off-screen radials, fixed to the viewport — and every hue is
+ *    replaced with the palette's own white at 1.6–3% alpha. Peak added
+ *    luminance is ~8/255: enough for the glass to pick up, invisible as a
+ *    gradient. The existing 64px technical grid rides along as the second
+ *    backdrop layer, which is what the refraction actually bends.
+ *
+ * The refraction half is `app/plugins/liquid-glass.ts`, which registers the
+ * `v-liquid-glass` directive the panel tier is paired with. It is a universal
+ * plugin, not a client-only one: Vue's server renderer resolves every directive
+ * it meets, and an unresolved one fails the render outright.
+ */
+
+:root {
+  /* Square, to match the hairline grid the rest of the page is built on. */
+  --glass-radius: 0;
+  --glass-radius-lg: 0;
+  --glass-radius-chip: 0;
+
+  --glass-duration: 180ms;
+  --glass-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Tint: white → 70% gray, near-transparent, colorless by design — any hue in
+     the tint would fight the monochrome palette. */
+  --glass-tint-top: rgba(255, 255, 255, 0.045);
+  --glass-tint-bottom: rgba(179, 179, 179, 0.045);
+  --glass-tint-top-hover: rgba(255, 255, 255, 0.085);
+  --glass-tint-bottom-hover: rgba(179, 179, 179, 0.085);
+
+  /* Rim: three inset highlights that read as a polished edge. Tuned against
+     `--color-line` (#292929) so a glass edge sits a step brighter than the
+     hairline beside it without becoming a glowing border. */
+  --glass-rim-top: rgba(255, 255, 255, 0.34);
+  --glass-rim-hairline: rgba(255, 255, 255, 0.06);
+  --glass-rim-bottom: rgba(255, 255, 255, 0.04);
+
+  --glass-border: rgba(255, 255, 255, 0.085);
+
+  /* Menu tier — a wash of the surface token under heavy blur, so a label stays
+     readable whatever scrolls beneath it. */
+  --glass-menu-surface: #141414; /* == --color-surface */
+  --glass-menu-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.55),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+
+  /* Ambient field — the monochrome replacement for the skill's colour mesh. */
+  --glass-mesh-a: rgba(255, 255, 255, 0.03);
+  --glass-mesh-b: rgba(255, 255, 255, 0.018);
+  --glass-mesh-c: rgba(255, 255, 255, 0.022);
+  --glass-mesh-corner-top: rgba(255, 255, 255, 0.02);
+  --glass-mesh-corner-bottom: rgba(255, 255, 255, 0.016);
+}
+
+@layer components {
+  /* ---------------------------------------------------------------------------
+     Ambient field. Required, not decoration: glass shows what is behind it, and
+     behind a flat fill there is nothing to show. Added to `.grid-field`'s own
+     background stack in `main.css` rather than given its own element, so the
+     page keeps one fixed decorative layer.
+     --------------------------------------------------------------------------- */
+
+  /* ---------------------------------------------------------------------------
+     Panel tier — pair with the refraction composable:
+     <div class="liquid-glass" ref="…">…</div>
+     --------------------------------------------------------------------------- */
+  .liquid-glass {
+    position: relative;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--glass-radius);
+    background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+    box-shadow:
+      inset 0 1px 0 var(--glass-rim-top),
+      inset 0 0 0 1px var(--glass-rim-hairline),
+      inset 0 -1px 0 var(--glass-rim-bottom);
+    /* Fallback for engines without SVG-referenced backdrop filters. Where the
+       composable runs it overwrites this with `url(#…)`. */
+    backdrop-filter: blur(3px) saturate(125%);
+    -webkit-backdrop-filter: blur(3px) saturate(125%);
+  }
+
+  .liquid-glass--hover {
+    transition:
+      transform var(--glass-duration) var(--glass-ease),
+      box-shadow var(--glass-duration) var(--glass-ease),
+      background var(--glass-duration) var(--glass-ease);
+  }
+
+  .liquid-glass--hover:hover {
+    background: linear-gradient(
+      180deg,
+      var(--glass-tint-top-hover),
+      var(--glass-tint-bottom-hover)
+    );
+    transform: translateY(-2px);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Chip tier — CSS only, no refraction. A canvas bake is priced per surface,
+     so it is wrong for something that appears by the dozen and too small to
+     read the effect on anyway. Used by the project status labels.
+     --------------------------------------------------------------------------- */
+  .liquid-glass-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--glass-radius-chip);
+    background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+    box-shadow: inset 0 1px 0 var(--glass-rim-top);
+    backdrop-filter: blur(6px) saturate(125%);
+    -webkit-backdrop-filter: blur(6px) saturate(125%);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Menu tier — the sticky navigation and the mobile panel. No refraction:
+     these float over arbitrary scrolling content, so their labels cannot depend
+     on what happens to be underneath (SKILL.md, and the "panel that scrolls
+     with content behind it" pitfall).
+     --------------------------------------------------------------------------- */
+  .liquid-glass-menu {
+    background: color-mix(in srgb, var(--glass-menu-surface) 62%, transparent);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--glass-menu-shadow), inset 0 1px 0 var(--glass-rim-top);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+  }
+
+  /* The mobile disclosure panel is a child of the glass header, so it paints no
+     surface of its own — the header already supplies the wash and the rim, and
+     a second translucent fill beneath it would read darker than its parent. */
+  .liquid-glass-menu .glass-panel-child {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .liquid-glass--hover {
+      transition-duration: 0.01ms;
+    }
+
+    .liquid-glass--hover:hover {
+      transform: none;
+    }
+  }
+}
