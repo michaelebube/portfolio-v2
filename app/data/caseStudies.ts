@@ -46,6 +46,8 @@ export const CLAIM_PRESENTATION: Record<
 export interface CaseSection {
   id: string
   heading: string
+  /** Allows project-specific material to remain available without rendering it. */
+  visible?: boolean
   paragraphs?: string[]
   bullets?: string[]
   /** Labelled rows, rendered as a definition list on a solid surface. */
@@ -96,6 +98,9 @@ export interface CaseStudy {
   /** The repository this entry was verified against, by relative path. */
   source: string
   stack: string[]
+  /** Optional controls for case studies that should omit evidence/link copy. */
+  showLinks?: boolean
+  showEvidenceLead?: boolean
   /** The glass evidence panel at the top of the page. */
   sections: CaseSection[]
   /**
@@ -113,7 +118,7 @@ export interface CaseStudy {
    * that draws it is picked in the page, not here — there is one diagram on the
    * site, and a map of one entry would be indirection for its own sake.
    */
-  diagram?: { caption: string }
+  diagram?: { caption?: string }
 }
 
 export const caseStudies: CaseStudy[] = [
@@ -500,17 +505,22 @@ export const caseStudies: CaseStudy[] = [
     tagline: 'Payment collection from a spoken sentence',
     status: 'In development',
     summary:
-      'A merchant says what they were paid and who paid it. The audio is transcribed, the amount and phone number are extracted, a checkout link is created with the payment provider and sent to the customer over WhatsApp — while the merchant gets a spoken confirmation in Nigerian Pidgin.',
-    role: 'Frontend Engineer',
+      'A voice-first payment request flow for merchants: a spoken sentence is transcribed and parsed into a payment request, a checkout link is created and sent to the customer over WhatsApp, and the merchant is intended to receive a spoken confirmation in Nigerian Pidgin.',
+    role: 'Frontend Engineer and Android contributor',
     period: '2026',
     source:
       'GhostPay_BackendClient-main/ and GhostPay_Android_Nuxt/ (two repositories, inspected separately)',
+    showLinks: false,
+    showEvidenceLead: false,
     stack: [
       'TypeScript',
       'Nuxt 4',
       'Vue 3',
       'Capacitor 8',
       'Kotlin',
+      'Firebase',
+      'Google Gemini',
+      'Korapay',
       'WhatsApp Cloud API',
     ],
     sections: [
@@ -518,27 +528,42 @@ export const caseStudies: CaseStudy[] = [
         id: 'problem',
         heading: 'Problem and intended users',
         paragraphs: [
-          'For a market trader or a small storefront, taking a transfer means interrupting what they are doing: unlock the phone, open the banking app, type an amount, find the customer, send a request, wait, then confirm out loud. Every step is a place to make a mistake, and the mistake that matters is asking the wrong person for the wrong amount.',
-          'GhostPay is built for the moment after the money is agreed and before it arrives. The merchant speaks a sentence, and the machine handles the rest. The design constraint is that the merchant’s hands are busy and their attention is on a customer, so the interface has to be a notification they press and a sentence they say.',
-          'The whole flow is native to Android, not the web: the entry point is a persistent notification and a Quick Settings tile, and the confirmation is a push that plays audio.',
+          'For a market trader or small storefront, requesting a transfer can mean stopping a conversation to open an app, enter an amount, find the customer, send a request, and wait for confirmation. Each step introduces friction, and entering the wrong amount or contacting the wrong person can turn a routine transaction into a costly mistake.',
+          'GhostPay explores a simpler interaction: the merchant speaks a sentence and the system handles the steps that follow. The experience is designed around merchants whose hands are occupied and whose attention is on the customer rather than the phone.',
+          'The idea is not simply to add voice input to a payment form. It is to make voice the primary entry point, with a persistent Android notification and Quick Settings tile intended to make the flow accessible without navigating through the application.',
+        ],
+      },
+      {
+        id: 'contribution',
+        heading: 'My contribution',
+        paragraphs: [
+          'I worked on the Nuxt 4 and Vue client, the Capacitor-powered Android application, and the native components that support its intended voice-first experience. My work covered the frontend pages and composables, audio-capture integration, merchant authentication state, and the Android shell implemented in Kotlin.',
+          'I also helped shape the product concept and the intended interaction between the client and backend. The backend functions, Firestore data model, and payment-provider integrations were developed separately as part of the collaborative project. This case study describes the wider system to explain the engineering context, while distinguishing my implementation from components whose authorship is not established.',
+        ],
+        bullets: [
+          'Nuxt + Vue: five pages covering the main entry point, login, onboarding, transaction history, and overlay experience.',
+          'Client-side logic: composables for audio capture, authentication state, and communication with the backend.',
+          'Capacitor integration: the bridge between the web application and native Android functionality.',
+          'Native Android components: five Kotlin classes covering the activity, foreground service, Quick Settings tile, messaging service, and transparent overlay activity.',
+          'The client repository contains twelve commits attributed to me. The separate backend copy has no Git history available, so its individual authorship cannot be established from the source examined for this case study.',
         ],
       },
       {
         id: 'architecture',
         heading: 'Architecture and data flow',
         paragraphs: [
-          'The backend and the client are separate repositories with separate lifetimes. Everything decision-shaped happens in the functions; the client captures audio, holds a token and displays state.',
-          'This page describes the whole system, and it is worth being clear that the whole system is not one person’s work. Michael’s contribution is the client: the Nuxt 4 pages, the composables that capture audio and hold the merchant token, and the Capacitor 8 Android shell with its five Kotlin classes. The Cloud Functions backend, the Firestore data model and the provider integrations were built as part of the same project by other contributors, and the diagram below marks that division rather than flattening it. Author credit details are in the ledger above.',
+          'GhostPay separates the mobile client from the backend. The client captures input, manages the merchant-facing experience, and communicates with backend endpoints. The backend is responsible for transaction processing, provider integrations, and the intended confirmation workflow.',
+          'The diagram describes the architecture represented in the source code. It is not evidence that the complete system has been deployed or verified end to end.',
         ],
         bullets: [
-          'The merchant authenticates with a phone number and receives a signed token that the client stores and sends on each request.',
-          'Onboarding verifies a payout account through the provider’s resolution endpoint and records it against the merchant.',
-          'A capture is uploaded as multipart audio. The function hashes merchant, amount, phone and a thirty-second window into an idempotency key and returns the cached response if that key was seen recently, so a double press cannot create two charges.',
-          'The audio is transcribed, and the transcript is parsed into a structured intent, with the phone number validated before use.',
-          'The intent is written to Firestore as a pending transaction keyed by its reference, then a charge is created with the provider.',
-          'The checkout link is sent to the customer as a WhatsApp template message, in a background continuation so the response is not held open.',
-          'The webhook resolves the charge on the provider’s callback, verified by signature; a scheduled poll every two minutes catches the ones the callback misses.',
-          'On confirmation, a Pidgin audio message is generated, stored, and pushed to the merchant’s device, where a native service plays it.',
+          'Merchant authentication sends a phone number and receives a token.',
+          'Account verification requests resolution of the merchant’s payout account.',
+          'Merchant onboarding submits onboarding information.',
+          'Voice ingestion uploads a recorded audio command as multipart data.',
+          'The backend transcribes the audio, extracts the amount, description and customer phone number, validates the number, records a pending transaction, and requests a charge from the provider.',
+          'The checkout link is sent to the customer through a WhatsApp template message.',
+          'A signature-verified webhook and a scheduled poll are intended to resolve payment status.',
+          'After confirmation, a Pidgin audio response is generated and intended for delivery through Firebase Cloud Messaging to the merchant’s device.',
         ],
       },
       {
@@ -546,45 +571,39 @@ export const caseStudies: CaseStudy[] = [
         heading: 'Key implementation decisions',
         rows: [
           {
-            term: 'Whose decisions these are',
+            term: 'Make voice the entry point',
             detail:
-              'Stated before the list rather than after it: these were made across the team that built GhostPay, not by one person. Where a decision is specifically about the client — how audio is captured, how the token is held, how the native shell is wired — it is this author’s. The rest are recorded because a case study that described only half the system would leave the reader unable to follow the flow it just set out.',
-            state: 'reported',
-          },
-          {
-            term: 'Bias the transcription toward the register',
-            detail:
-              'Whisper is given a prompt naming Nigerian English and the abbreviations that carry the amount — `k` for thousand, `naira` as the currency, the real mobile prefixes. Transcription quality is a function of what the model expects to hear, and the expensive part of a voice payment is getting the number wrong.',
+              'The interaction starts with a spoken payment command rather than a conventional payment form. The Android notification and Quick Settings tile are intended to reduce the steps required to initiate a request while serving a customer.',
             state: 'verified',
           },
           {
-            term: 'Validate the model, do not trust it',
+            term: 'Adapt transcription to the local context',
             detail:
-              'The phone number from the language model is checked against a Nigerian E.164 pattern before it is written to a transaction. A language model is a parser here, not an authority, and a mis-parsed number sends a payment link to a stranger.',
+              'The transcription request includes guidance for Nigerian English and local ways of expressing amounts, including shorthand such as `k` and references to naira. An incorrectly transcribed amount can change the meaning of a payment request.',
             state: 'verified',
           },
           {
-            term: 'Make a repeated capture harmless',
+            term: 'Validate extracted details before use',
             detail:
-              'Idempotency is computed from the content of the command and a short time window rather than from a client-supplied key. The failure this prevents is a merchant pressing the button twice because the first press felt slow.',
+              'The language model extracts structured data, but its output is not treated as authoritative. The backend validates the customer phone number against a Nigerian E.164 pattern before using it in a transaction.',
             state: 'verified',
           },
           {
-            term: 'Verify the webhook properly',
+            term: 'Make repeated captures safe',
             detail:
-              'The signature is checked against the raw body with a timing-safe comparison, and an unconfigured secret is a refusal rather than a bypass. This is the one path where being generous would mean accepting forged payment confirmations.',
+              'The backend computes an idempotency key from transaction details and a short time window rather than relying exclusively on a client-generated key. This is intended to prevent duplicate charges when a merchant repeats an action because the first request appears slow.',
             state: 'verified',
           },
           {
-            term: 'Answer the merchant in their own voice',
+            term: 'Confirm payments through the provider',
             detail:
-              'The confirmation is spoken rather than displayed, because a merchant mid-transaction is not looking at a screen. The Pidgin phrasing and a named voice were chosen for the same reason the transcription prompt was.',
+              'The intended confirmation flow uses a signature-verified webhook, with a scheduled poll to recover unresolved charges. This separates payment confirmation from the initial charge request and makes the design more tolerant of missed callbacks.',
             state: 'verified',
           },
           {
-            term: 'Cover the callback with a poll',
+            term: 'Speak the confirmation',
             detail:
-              'A webhook is a promise the network may not keep. A scheduled sweep re-queries unresolved charges and completes them, which makes the confirmation path tolerant of a dropped callback.',
+              'A spoken confirmation in Nigerian Pidgin is intended to let the merchant receive feedback without needing to look at the screen. The choice follows the same principle as voice input: reduce the need to interact with the phone during a transaction.',
             state: 'verified',
           },
         ],
@@ -594,93 +613,87 @@ export const caseStudies: CaseStudy[] = [
         heading: 'Engineering trade-offs',
         rows: [
           {
-            term: 'Buying the two hard models',
+            term: 'External models versus hosting our own',
             detail:
-              'Transcription and intent extraction are both external calls, which adds two vendors, two keys and two latencies to a flow that has to feel immediate. The alternative was training or hosting both, and nothing about this project justified that.',
+              'Transcription and intent extraction rely on external services. This reduces the need to train or host models, but introduces external dependencies, credentials, latency, and service availability into a flow that is intended to feel immediate.',
             state: 'verified',
           },
           {
-            term: 'A live payment host with no sandbox switch',
+            term: 'Native-first interaction versus portability',
             detail:
-              'The provider’s production host is the only one in the code, and test versus live is decided by whichever key is deployed. That keeps one path rather than two, at the cost of a system where the difference between a rehearsal and taking real money is an environment variable nobody can see from the repository.',
+              'The persistent notification, Quick Settings tile, overlay, and push-triggered audio make Android central to the intended experience. The trade-off is that the full interaction cannot be assumed to work in a browser. The source also contains a recording-format mismatch that needs to be resolved before browser-based recording can be relied upon.',
+            state: 'verified',
+          },
+          {
+            term: 'Asynchronous notification delivery',
+            detail:
+              'The WhatsApp notification is handled outside the main request path so that a slow message send does not hold the initial response open. However, the response currently cannot reliably report the message-send result, and the relevant field is hardcoded to `false`.',
+            state: 'verified',
+          },
+          {
+            term: 'Separate client and backend repositories',
+            detail:
+              'Keeping the client and backend separate establishes a clear ownership and implementation boundary. It also means that shared types cannot automatically catch contract mismatches between the two repositories. Differences in response fields and data access have contributed to integration problems.',
+            state: 'verified',
+          },
+          {
+            term: 'Production-oriented payment configuration',
+            detail:
+              'The provider’s production host is the only host visible in the source examined. Whether the application uses test or live credentials depends on deployment configuration, which makes the distinction difficult to establish from the repository alone.',
             state: 'partial',
-          },
-          {
-            term: 'Native-only entry point',
-            detail:
-              'Building the flow around a foreground service and a Quick Settings tile makes it genuinely fast to invoke and genuinely unavailable anywhere else. Voice capture has a browser fallback in its plugin, but the client labels every upload as MP4 regardless of platform, so a browser recording would be mislabelled to the transcriber.',
-            state: 'partial',
-          },
-          {
-            term: 'Confirming from the callback rather than the response',
-            detail:
-              'The WhatsApp send was moved off the request path so the merchant is not waiting on Meta. The cost is that the response can no longer report whether the message was sent, and the field that would carry it is a hardcoded false.',
-            state: 'verified',
-          },
-          {
-            term: 'Two repositories',
-            detail:
-              'Splitting backend from client gave the two halves clean boundaries. It also removed the compile-time check that would have caught the field-name and empty-string mismatches, which are exactly the class of error a shared type would have prevented.',
-            state: 'verified',
           },
         ],
       },
       {
         id: 'outcomes',
+        visible: false,
         heading: 'Verified outcomes',
         paragraphs: [
-          'The backend pipeline is written end to end and its pieces are individually real calls to real services. The integration between the client and the backend is not verified, and two defects in the source currently prevent the stated flow from completing. Nothing below should be read as a working end-to-end payment.',
+          'The project has a substantial implementation across the client and backend source, but the complete payment journey has not been verified.',
         ],
         rows: [
           {
-            term: 'Real integrations, not stubs',
+            term: 'Implemented in source',
             detail:
-              'Transcription, intent extraction, charge creation, account resolution, the WhatsApp template message and the speech synthesis are all live HTTP calls to real providers. There is no mock branch, no fake response and no placeholder on the payment path.',
+              'The client contains the Nuxt pages, composables, Capacitor integration, and native Kotlin components described above. The backend source contains the transaction-processing handlers and integrations with the transcription, language-model, payment, messaging, and speech services.',
             state: 'verified',
           },
           {
             term: 'Tested',
             detail:
-              'Intent parsing and the fallback poller have unit tests that run without credentials, against mocked providers. The ingest handler, webhook, authentication and onboarding have no test.',
+              'Unit tests exist for intent parsing and the fallback poller. These tests run without live credentials and use mocked providers. The ingest handler, webhook, authentication, and onboarding do not have corresponding tests in the source examined.',
             state: 'partial',
           },
           {
             term: 'Built for a device',
             detail:
-              'A debug Android package was produced, and the native shell — foreground service, tile, overlay, messaging service — is real Kotlin wired through the manifest. No run on a device or emulator is evidenced anywhere, and the instructions in the repository explicitly defer micro­phone, overlay and push testing to physical hardware.',
+              'A debug Android package was produced, and the native components are present in the project. However, there is no recorded device or emulator run establishing that the notification, overlay, microphone, push, and audio-playback paths work together.',
             state: 'partial',
           },
           {
-            term: 'Not verified',
+            term: 'Not verified end to end',
             detail:
-              'That a payment completes, that the message is delivered, that the push arrives, that the audio plays, and that any of it survives contact with a real merchant. These require credentials, an approved message template and a device, none of which are in evidence.',
+              'There is no evidence that a merchant can complete a payment through the full intended journey, receive a working WhatsApp message, or hear a confirmation on a physical device. The client/backend integration and required deployment configuration remain unresolved.',
             state: 'absent',
           },
         ],
       },
       {
         id: 'limits',
+        visible: false,
         heading: 'Limitations and next steps',
         bullets: [
-          'The client cannot succeed on a successful response. It requires a non-empty audio-feedback URL and the backend always returns one empty. This is the first fix: it is a one-line contract mismatch that makes the happy path unreachable.',
-          'The history screen cannot read its own data. Field names disagree between the two repositories, no Firebase session is established, and the compound query has no index. All three need correcting together before the screen can be judged.',
-          'Money has no route to the merchant. Payout details are collected, verified and stored, then never used: there is no subaccount and no transfer. Until that exists the system demonstrates a checkout link, not a payment to a merchant.',
-          'The Google Services configuration file is missing, so push cannot initialise in a fresh build and the confirmation path cannot be exercised. This is a prerequisite, not a nice-to-have.',
-          'Whether a charge is live or test is invisible from the source and depends entirely on a deployed environment variable. That should be explicit in the deployment configuration rather than inferred from a key, and the distinction should be stated wherever this project is described.',
-          'The device-dependent claims — overlay, tile, push, audio playback — should stay unshown until a run on real hardware is recorded. An emulator screenshot would not prove the audio path, and the repository’s own instructions say so.',
+          'The client expects a non-empty audio-feedback URL, while the backend currently returns an empty value. This prevents the intended successful-response path from completing and is a priority integration fix.',
+          'The history screen has mismatched field names between the repositories, no established Firebase session for its data access, and a compound query that requires an index. These issues need to be addressed together before the screen can be considered functional.',
+          'The backend collects and resolves merchant payout details, but the current charge flow does not use them to route funds to the merchant. There is no subaccount or transfer call in the source examined. Consequently, the project does not yet establish a complete merchant-payout flow.',
+          'The Google Services configuration file is absent. In a fresh build, Firebase cannot initialise as required for the intended push-confirmation path. Configuration and device testing are prerequisites to verifying that experience.',
+          'The notification, overlay, microphone, push, and audio-playback paths need to be exercised on physical hardware. These capabilities should remain described as implemented in source but unverified at runtime until a device run establishes their behaviour.',
+          'The distinction between test and live payment processing needs to be visible in the deployment configuration and verified before any real transactions are attempted.',
         ],
       },
     ],
     links: [],
-    captures: [
-      'The capture overlay on a physical device, mid-recording — no capture exists',
-      'The confirmation notification and the audio it plays, which need a recorded device run and a Google Services configuration that is not in the repository',
-      'The history screen, which as written cannot return data',
-      'Anything the merchant or the customer actually sees — no reply from the backend was ever observed arriving in the client',
-    ],
     diagram: {
-      caption:
-        'Drawn from both repositories, and honest about being drawn: this is a diagram of what the source says the system is, not a photograph of it running. It is here because a case study that describes six services and seven functions should show how they connect, and because the connection is the part most easily overstated. The ownership line is the point of it. The Nuxt and Capacitor client and its Android shell are this author’s; the Firebase functions, the data model and the provider work were done by other contributors to the same project; and the services at the bottom belong to nobody here. Where authorship could not be established from anything on disk, the node says so rather than being quietly folded into the rest.',
     },
   },
   {
