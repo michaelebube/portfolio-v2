@@ -108,75 +108,10 @@ const services = [
   },
 ]
 
-/**
- * The last block, and the reason the diagram is not a boast: what the source
- * says is missing or could not be checked. These are not drawn as connected to
- * anything, because as written they are not.
- */
-const unverified = [
-  {
-    term: 'No Google Services configuration',
-    detail:
-      'The file is absent from the repository, so the build applies the plugin conditionally and Firebase never initialises. In a clean build the whole confirmation path is dead.',
-  },
-  {
-    term: 'No route for the money',
-    detail:
-      'Payout details are collected, resolved and stored, then read nowhere: the charge body carries no subaccount and no transfer call exists. Funds would land in the platform account.',
-  },
-  {
-    term: 'No deployment',
-    detail:
-      'No compiled output in the backend copy and placeholder endpoints in its README. A local emulator was used during development; nothing shows the functions were ever deployed.',
-  },
-  {
-    term: 'No visible live-or-test switch',
-    detail:
-      'The payment provider’s production host is the only one in the code. Whether a charge moves real money depends on an environment variable that is in neither repository.',
-  },
-  {
-    term: 'No run on a device',
-    detail:
-      'No emulator or hardware run is evidenced anywhere, and the repository’s own instructions defer microphone, overlay and push testing to physical hardware.',
-  },
-]
-
-const legend = [
-  {
-    mark: 'own',
-    label: 'This author’s work',
-    detail:
-      'The client repository is twelve commits and all twelve are Michael Ebube’s, so the client is attributable to him.',
-  },
-  {
-    mark: 'shared',
-    label: 'Authorship not established',
-    detail:
-      'Present in the source and read for this page. The backend copy carries no git history at all, so nothing on disk says who wrote it.',
-  },
-  {
-    mark: 'external',
-    label: 'Third party',
-    detail:
-      'Called over the network. Whether each account exists or is configured is not visible from either repository.',
-  },
-]
 </script>
 
 <template>
   <div class="arch">
-    <!-- Ownership legend. Read before the diagram, because it is what the
-         diagram is for. -->
-    <ul class="arch__legend">
-      <li v-for="item in legend" :key="item.mark" class="arch__legend-item">
-        <span class="arch__swatch" :class="`arch__swatch--${item.mark}`" aria-hidden="true" />
-        <span class="arch__legend-body">
-          <span class="block text-ink">{{ item.label }}</span>
-          <span class="mt-1 block text-[0.9375rem] leading-[1.6] text-ink-muted">{{ item.detail }}</span>
-        </span>
-      </li>
-    </ul>
-
     <ol class="arch__flow">
       <!-- ================================================================
            The client. Solid border, and the only node that names a person.
@@ -271,23 +206,6 @@ const legend = [
       </li>
     </ol>
 
-    <!-- ==================================================================
-         Not connected to anything, because as written it is not connected.
-         ================================================================== -->
-    <div class="arch__absent">
-      <h3 class="arch__title">In the source as missing, or impossible to check</h3>
-      <p class="arch__lede">
-        These are not nodes on the diagram above, because nothing in either repository joins them
-        up. Each one is a place where the flow described in this case study stops.
-      </p>
-
-      <dl class="arch__rows arch__rows--spaced">
-        <div v-for="item in unverified" :key="item.term">
-          <dt class="arch__term">{{ item.term }}</dt>
-          <dd class="arch__detail">{{ item.detail }}</dd>
-        </div>
-      </dl>
-    </div>
   </div>
 </template>
 
