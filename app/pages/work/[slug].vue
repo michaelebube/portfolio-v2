@@ -59,7 +59,7 @@ const meta = computed(() => {
  */
 const figuresLead = computed(() => {
   const entry = study.value
-  if (!entry) return ''
+  if (!entry || entry.showEvidenceLead === false) return ''
   if (entry.figures?.length) {
     return 'Real captures of a build of this project, shown at the size they were taken. Every caption says what its image shows and what it does not — an empty state proves that a screen renders, and nothing beyond it.'
   }
@@ -126,11 +126,12 @@ const figuresLead = computed(() => {
          The eight parts, six of them here. Solid, editorial, heading rail.
          ===================================================================== -->
     <div class="container-page mt-16 space-y-14 md:mt-24 md:space-y-20">
-      <CaseStudySection
-        v-for="section in study.sections"
-        :key="section.id"
-        :section="section"
-      />
+      <template v-for="section in study.sections" :key="section.id">
+        <CaseStudySection
+          v-if="section.visible !== false"
+          :section="section"
+        />
+      </template>
     </div>
 
     <!-- =====================================================================
@@ -170,7 +171,11 @@ const figuresLead = computed(() => {
           <h2 id="build-heading" class="text-[clamp(1.375rem,2.4vw,1.75rem)]" data-reveal>
             From the running build
           </h2>
-          <p class="mt-4 text-[0.9375rem] leading-[1.6] text-ink-muted" data-reveal>
+          <p
+            v-if="figuresLead"
+            class="mt-4 text-[0.9375rem] leading-[1.6] text-ink-muted"
+            data-reveal
+          >
             {{ figuresLead }}
           </p>
         </div>
@@ -181,7 +186,10 @@ const figuresLead = computed(() => {
                entry here would be indirection without a second caller. -->
           <figure v-if="study.diagram">
             <GhostPayArchitecture />
-            <figcaption class="mt-7 border-t border-line pt-5 leading-[1.7] text-ink-muted">
+            <figcaption
+              v-if="study.diagram.caption"
+              class="mt-7 border-t border-line pt-5 leading-[1.7] text-ink-muted"
+            >
               {{ study.diagram.caption }}
             </figcaption>
           </figure>
@@ -230,7 +238,11 @@ const figuresLead = computed(() => {
          Links. Rendered from data, so a link only ever appears here once it has
          been checked to resolve. With none verified, that is what it says.
          ===================================================================== -->
-    <section class="container-page mt-16 md:mt-24" aria-labelledby="links-heading">
+    <section
+      v-if="study.showLinks !== false"
+      class="container-page mt-16 md:mt-24"
+      aria-labelledby="links-heading"
+    >
       <div class="grid gap-6 border-t border-line pt-10 lg:grid-cols-12 lg:gap-16">
         <h2 id="links-heading" class="text-[clamp(1.375rem,2.4vw,1.75rem)] lg:col-span-3" data-reveal>
           Source and links
