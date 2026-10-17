@@ -65,6 +65,8 @@ const stackSummary = computed(() => props.project.stack.join(' · '))
             <a
               v-if="project.repo"
               :href="project.repo"
+              target="_blank"
+              rel="noopener noreferrer"
               class="label-mono nav-link inline-flex items-center gap-2"
               :aria-label="`${project.name} source on GitHub`"
             >
@@ -83,6 +85,7 @@ const stackSummary = computed(() => props.project.stack.join(' · '))
       :style="{ '--reveal-step': 2 }"
     >
       <MediaPlaceholder
+        :image="project.media.image"
         :title="project.name"
         :stack-summary="stackSummary"
         :pending="project.media.pending"

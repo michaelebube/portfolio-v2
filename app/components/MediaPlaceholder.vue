@@ -1,14 +1,10 @@
 <script setup lang="ts">
 /**
- * A labelled frame standing in for the screenshots that do not exist.
+ * A project media frame. It displays a selected capture when one exists and
+ * falls back to a labelled placeholder when the evidence is not available.
  *
- * No project has a set of captures complete enough to fill this slot, and the
- * frame states its own status instead: what has been captured, what has not,
- * and where a reader can see it. Real captures live in the case studies, which
- * is where they can carry the caption explaining what each one does and does
- * not evidence — a screenshot in a homepage slot has no room for that, and an
- * unexplained screenshot is the thing this site exists not to do. There is no
- * fake chrome, no grey bars and no invented data (AGENT.md §10).
+ * Selected captures are shown without cropping so the full page remains
+ * visible. Projects without a selected capture retain the labelled placeholder.
  *
  * The title leads, so a phone reads a named thing with a note under it rather
  * than a tiny label above a heading. Everything inside is real text, so nothing
@@ -16,6 +12,10 @@
  * sees.
  */
 defineProps<{
+  image?: {
+    src: string
+    alt: string
+  }
   /** Display line: the project the frame belongs to. */
   title: string
   /** Mono stack summary printed inside the frame. */
@@ -27,15 +27,23 @@ defineProps<{
 
 <template>
   <figure class="frame">
-    <div class="frame__field" aria-hidden="true" />
+    <img
+      v-if="image"
+      :src="image.src"
+      :alt="image.alt"
+      class="frame__image"
+    />
+    <template v-else>
+      <div class="frame__field" aria-hidden="true" />
 
-    <div class="frame__body">
-      <p class="frame__title">{{ title }}</p>
+      <div class="frame__body">
+        <p class="frame__title">{{ title }}</p>
 
-      <div class="mt-auto pt-8">
-        <p class="frame__stack">{{ stackSummary }}</p>
-        <p class="frame__pending">{{ pending }}</p>
+        <div class="mt-auto pt-8">
+          <p class="frame__stack">{{ stackSummary }}</p>
+          <p class="frame__pending">{{ pending }}</p>
+        </div>
       </div>
-    </div>
+    </template>
   </figure>
 </template>
