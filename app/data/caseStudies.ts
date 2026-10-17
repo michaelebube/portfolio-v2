@@ -234,27 +234,27 @@ export const caseStudies: CaseStudy[] = [
           },
         ],
       },
-      {
-        id: 'outcomes',
-        heading: 'Verified outcomes',
-        paragraphs: [
-          'What follows is what the source shows, and nothing beyond it. The application is not a diagnostic or treatment system, and nothing here should be read as a clinical claim.',
-        ],
-        rows: [
-          {
-            term: 'Working, end to end in code',
-            detail:
-              'Email and password authentication with a route guard, persistent chat threads, mood logging with a Chart.js view, the Dialogflow classification path, the Gemini reply path, the fallback between them, and crisis detection with an SOS screen.',
-            state: 'verified',
-          },
-          {
-            term: 'The reported evaluation',
-            detail:
-              'The résumé reports a BUS-11 usability evaluation, 21 participants, an overall mean of 4.50 / 5. The instrument, the responses, the recruitment and the analysis are not in the repository, so the figure is published here as the résumé’s claim and explicitly not as a validated or third-party finding. Nothing on this page rests on it.',
-            state: 'reported',
-          },
-        ],
-      },
+      // {
+      //   id: 'outcomes',
+      //   heading: 'Verified outcomes',
+      //   paragraphs: [
+      //     'What follows is what the source shows, and nothing beyond it. The application is not a diagnostic or treatment system, and nothing here should be read as a clinical claim.',
+      //   ],
+      //   rows: [
+      //     {
+      //       term: 'Working, end to end in code',
+      //       detail:
+      //         'Email and password authentication with a route guard, persistent chat threads, mood logging with a Chart.js view, the Dialogflow classification path, the Gemini reply path, the fallback between them, and crisis detection with an SOS screen.',
+      //       state: 'verified',
+      //     },
+      //     {
+      //       term: 'The reported evaluation',
+      //       detail:
+      //         'The résumé reports a BUS-11 usability evaluation, 21 participants, an overall mean of 4.50 / 5. The instrument, the responses, the recruitment and the analysis are not in the repository, so the figure is published here as the résumé’s claim and explicitly not as a validated or third-party finding. Nothing on this page rests on it.',
+      //       state: 'reported',
+      //     },
+      //   ],
+      // },
     ],
     links: [
       {
