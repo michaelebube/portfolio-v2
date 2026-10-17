@@ -84,7 +84,9 @@ const stackSummary = computed(() => props.project.stack.join(' · '))
       data-reveal
       :style="{ '--reveal-step': 2 }"
     >
+      <GhostPayOverviewDiagram v-if="project.id === 'ghostpay'" />
       <MediaPlaceholder
+        v-else
         :image="project.media.image"
         :title="project.name"
         :stack-summary="stackSummary"
