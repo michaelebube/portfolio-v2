@@ -124,6 +124,8 @@ export const featuredProjects: FeaturedProject[] = [
     status: 'In development',
     stack: [
       'Nuxt 4',
+      'Vue 3',
+      'TypeScript',
       'Capacitor',
       'Kotlin',
     ],
