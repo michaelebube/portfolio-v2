@@ -18,6 +18,10 @@
 export type PublicationState = 'pending'
 
 export interface MediaSlot {
+  image?: {
+    src: string
+    alt: string
+  }
   /**
    * The frame's whole statement: that the capture does not exist yet, and what
    * it will hold. Status and description are one line rather than a tiny label
@@ -57,7 +61,7 @@ export const featuredProjects: FeaturedProject[] = [
     id: 'mindwell',
     slug: 'mindwell-ai',
     name: 'MindWell AI',
-    purpose: 'A wellbeing companion for Nigerian university students, built as a final-year project.',
+    purpose: 'A wellbeing companion tailored to Nigerian university students, combining conversational AI, English and Nigerian Pidgin support, and accessible mental health resources designed around their everyday experiences.',
     status: 'Final-year project',
     stack: [
       'Nuxt 4',
@@ -72,6 +76,10 @@ export const featuredProjects: FeaturedProject[] = [
       'The conversational layer is routed through Dialogflow CX with Gemini behind it, so a matched intent is answered deterministically and anything unmatched still gets a response. Firebase carries authentication and the serverless backend. Verified against the source in Phase 3: one callable Cloud Function, two keyword layers around the model, and conversation memory re-read server-side.',
     repo: 'https://github.com/michaelebube/MindWell',
     media: {
+      image: {
+        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170302.png',
+        alt: 'MindWell AI splash screen with the MindWell logo',
+      },
       pending:
         'Six captures of this project are in the case study rather than here: the landing page, the home screen, the conversation list, the mood meter, the SOS screen and the splash. The frame stands for what none of the six shows — a conversation being answered, and the mood meter with anything in it.',
     },
@@ -80,7 +88,7 @@ export const featuredProjects: FeaturedProject[] = [
     id: 'xvault',
     slug: 'xvault',
     name: 'XVault',
-    purpose: 'An X bookmark archiving application that ingests, categorises and stores saved posts.',
+    purpose: 'An X bookmark archiving application that collects and stores saved posts, with tools to organise bookmarks into custom categories for easier browsing and retrieval. Designed to preserve bookmarked content and media, even when the original posts become unavailable.',
     status: 'Personal Tool',
     stack: [
       'Express 5',
@@ -97,7 +105,12 @@ export const featuredProjects: FeaturedProject[] = [
       'Synchronisation runs as background jobs: BullMQ queues on Redis drive Playwright sessions that read the bookmarks timeline through a stored, encrypted browser session, and media bytes are copied to Cloudflare R2 under object keys that are presigned per response. Verified against the source in Phase 3: three queues are declared and two have workers, so categorisation is enqueued and never processed.',
     reported:
       'Four captures are shown in the case study, and they now show a populated archive — non-zero counts, per-post archive timestamps and a sync status — so ingestion has evidently run at some point against an account. That is a real change from the earlier empty-state captures, and it does not settle everything: the captures still do not show the run itself, or media being served from storage rather than from the original post. The categories in them were applied by hand, because the automatic pass has no worker. Nothing on disk shows the stack was ever deployed.',
+    repo: 'https://github.com/michaelebube/XVault',
     media: {
+      image: {
+        src: '/work/xvault/Screenshot%202026-10-16%20183431.png',
+        alt: 'XVault bookmark archive filtered to the Relatable category',
+      },
       pending:
         'Four real captures are in the case study, including a populated archive. The frame stands for the gap they leave: a sync caught in the act, and any evidence that an archived image is served from storage rather than from the post it came from.',
     },
@@ -141,7 +154,7 @@ export const otherProjects: OtherProject[] = [
     name: "KED's Portfolio",
     kind: 'Client work · Nuxt 3',
     description:
-      'A separate portfolio built for a data analyst, opening on a typed introduction and carrying a bio, a skills breakdown with certificate links, six analysis project cards and a contact form.',
+      'A polished portfolio for a data analyst, designed to turn a broad range of skills, certifications and analytical work into a clear story for prospective employers.',
     stack: ['Nuxt 3', 'Vue 3', 'GSAP', 'EmailJS'],
     liveSite: 'https://data-with-donald.vercel.app',
     repo: 'https://github.com/michaelebube/Portfolio-Donald',
@@ -239,6 +252,7 @@ export const toolkit: ToolkitGroup[] = [
       'React',
       'Tailwind CSS',
       'SCSS',
+      'GSAP',
       'Vite',
       'Capacitor',
     ],
@@ -251,7 +265,7 @@ export const toolkit: ToolkitGroup[] = [
   {
     id: 'data',
     title: 'Databases and infrastructure',
-    items: ['Firestore', 'MongoDB', 'Redis', 'Cloudflare R2', 'Firebase', 'Render', 'Vercel'],
+    items: ['Firestore', 'MongoDB', 'Redis', 'Cloudflare R2', 'Firebase', 'Render', 'Railway', 'Vercel'],
   },
   {
     id: 'ai',

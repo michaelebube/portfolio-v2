@@ -26,9 +26,9 @@ const disciplines = ["Software", "Systems", "Applied AI"];
 useRevealOnScroll();
 
 const aboutIntro = [
-  "I am in my final year of Computer Science at Covenant University, and I spent six months on the frontend team at Cowrywise (YC S18), migrating the main web platform from Nuxt 2 to Nuxt 3, refactoring legacy components into a modular architecture, and building responsive interfaces for Cowrywise Kids.",
-  "Most of my work sits between the interface and the systems behind it: Nuxt and Vue at the front, Node, Express and Firebase underneath, applied AI through Dialogflow CX and Gemini. My final-year project, MindWell AI, puts those pieces together for Nigerian university students.",
-  "I care about the reasoning as much as the result — what was tried, what was rejected, and what still does not work. Every project below is labelled with what has actually been verified, because a portfolio that survives inspection is more useful than one that only reads well.",
+  "I’m a Computer Science graduate from Covenant University, specialising in Software Engineering, with a first-class academic record and six months on the frontend team at Cowrywise (YC S18). I worked on migrating the main web platform from Nuxt 2 to Nuxt 3, refactoring legacy components, and building responsive experiences for Cowrywise Kids.",
+  "I enjoy working across the stack, from building interfaces with Vue and Nuxt to working with Node.js, Express, MongoDB and Firebase on the backend. I’ve also explored applied AI through Dialogflow CX and Gemini, bringing these interests together in MindWell AI, my final-year project for Nigerian university students. More recently, I’ve been exploring how to build products that are not just functional, but thoughtfully engineered.",
+  "I care about understanding why things work the way they do, the trade-offs behind technical decisions, and what could be done better. Whether I’m working on an existing platform or building something from scratch, I want to create software that feels simple on the surface and is well thought out underneath.",
 ];
 </script>
 

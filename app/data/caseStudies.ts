@@ -105,7 +105,7 @@ export interface CaseStudy {
    */
   links: { label: string; href: string; note: string; kind: 'repo' | 'live' }[]
   /** Screenshots that still need to be captured, stated on the page. */
-  captures: string[]
+  captures?: string[]
   /** Real captures of a build, rendered above the list of what is missing. */
   figures?: CaseFigure[]
   /**
@@ -250,37 +250,20 @@ export const caseStudies: CaseStudy[] = [
           },
         ],
       },
-      {
-        id: 'limits',
-        heading: 'Limitations and next steps',
-        bullets: [
-          'The reported evaluation cannot be substantiated from what exists on disk. The next step is to locate or reconstruct the study, and publish the instrument and summary data alongside this page if it can be found.',
-          'A crisis-analysis prompt is written and exported in the crisis utilities but never called. Either it should be wired into the escalation path or deleted; today it describes a layer that does not run.',
-          'Pidgin support is real on the crisis path and absent from the interface. A student reading the app in Pidgin still meets an English UI.',
-          'The deployment address is published and the host answers, but the running application there has not been reviewed. The one capture on this page is a build of the client, not of that deployment, so it is not offered as proof that the address serves a working app.',
-          'The repository contains a committed environment file holding a live-looking API credential. That file needs rotating and removing from history before any of this is published or shared; it is called out here rather than fixed, because the repository is outside this project.',
-        ],
-      },
     ],
     links: [
       {
         label: 'github.com/michaelebube/MindWell',
         href: 'https://github.com/michaelebube/MindWell',
-        note: 'The public repository. Its package.json lists nuxt ^4.2.2, vue ^3.5.25 and chart.js ^4.5.1, which is what the claims above were checked against, so this is the same code and not an earlier draft.',
+        note: 'The public repository containing the MindWell application source.',
         kind: 'repo',
       },
       {
         label: 'mindwell-v1.vercel.app',
         href: 'https://mindwell-v1.vercel.app',
-        note: 'The deployment the repository links. The host was checked and answers; the application running there was not reviewed, and no capture on this page was taken from it.',
+        note: 'The live deployment of the MindWell application.',
         kind: 'live',
       },
-    ],
-    captures: [
-      'A conversation actually in progress — a question, a matched intent and the reply that came back. Six captures of this application now exist and not one of them shows the conversation layer answering anything.',
-      'The mood meter with real entries rather than an empty axis, and the mood-log screen that would produce them',
-      'The rest of the SOS screen: the helpline list sits below the emergency number, and the capture stops before it',
-      'The onboarding flow, which is currently unphotographed',
     ],
     figures: [
       {
@@ -308,10 +291,10 @@ export const caseStudies: CaseStudy[] = [
         height: 867,
       },
       {
-        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170601.png',
-        alt: 'The MindWell mood meter: today’s mood reading “Not logged yet”, a mood chart reading “No mood data for this period” with a Last 7 days selector, and a mood-insight panel.',
+        src: '/work/mindwell-ai/Screenshot%202026-10-17%20154304.png',
+        alt: 'The MindWell mood dashboard: today’s mood is Sad, with a populated 180-day mood chart and mood insight panel.',
         caption:
-          'The mood meter, and the clearest illustration of why empty states are weak evidence: the chart is built and has never been given anything to plot, so this proves the screen and nothing about mood tracking.',
+          'The previous empty mood dashboard has been replaced with the populated view, showing a selected mood, a chart with recorded entries and a generated insight.',
         width: 1895,
         height: 862,
       },
@@ -324,12 +307,20 @@ export const caseStudies: CaseStudy[] = [
         height: 868,
       },
       {
-        src: '/work/mindwell-ai/Screenshot%202026-10-16%20170302.png',
-        alt: 'The MindWell splash screen: the brain-and-leaf logo on a pale background of faint medical iconography, with a blue wave across the foot.',
+        src: '/work/mindwell-ai/Screenshot%202026-10-17%20153413.png',
+        alt: 'The MindWell login screen with email and password fields and a Log in button.',
         caption:
-          'The splash screen, included last because it carries the least: brand and loading state, and nothing about how the application behaves.',
-        width: 1917,
-        height: 871,
+          'The login screen, showing the email-and-password entry point before a student reaches the protected application.',
+        width: 958,
+        height: 575,
+      },
+      {
+        src: '/work/mindwell-ai/Screenshot%202026-10-17%20154202.png',
+        alt: 'The MindWell mood log asking how the user feels, with Happy, Sad and Not sure choices.',
+        caption:
+          'The mood-log screen, where a student records a simple current feeling before it appears in the dashboard.',
+        width: 961,
+        height: 575,
       },
     ],
   },
@@ -452,47 +443,15 @@ export const caseStudies: CaseStudy[] = [
           },
         ],
       },
+    ],
+    links: [
       {
-        id: 'outcomes',
-        heading: 'Verified outcomes',
-        paragraphs: [
-          'These are the paths that are present and wired in source. Nothing here has been run end to end against a live X account or a deployed environment, so each row is a statement about the code, not about a working system.',
-        ],
-        rows: [
-          {
-            term: 'Wired end to end',
-            detail:
-              'Invite-gated registration and login, refresh-token rotation with reuse detection and family revocation, category CRUD that reassigns rather than deletes, bookmark listing with filter, text search and an author facet, per-user scheduled scraping, and media archival with per-item failure isolation.',
-            state: 'verified',
-          },
-          {
-            term: 'Written but never invoked',
-            detail:
-              'Automatic categorisation, deletion detection and orphan-object cleanup. In each case the schema, the serialiser or the helper exists and the call site does not. They are listed here as gaps rather than as features.',
-            state: 'partial',
-          },
-          {
-            term: 'Screenshots',
-            detail:
-              'Eight unique captures exist, all produced by an automated smoke run: login in light, dark and mobile, an empty library, a created category, an uncategorized view and settings. There is no capture of a populated library, and an empty state is not evidence that ingestion works.',
-            state: 'partial',
-          },
-        ],
-      },
-      {
-        id: 'limits',
-        heading: 'Limitations and next steps',
-        bullets: [
-          'The categorisation worker is the first thing to finish. Today the system asks for work it has no one to do, which is worse than not asking.',
-          'Three settings actions in the client build their paths without the `/api` prefix the rest of the client uses. From source they resolve to the wrong route; they need to be corrected and then exercised against a running API.',
-          'Deletion detection is a field, a serialiser and a badge with no writer. Either the check is implemented or the badge is removed — as it stands the interface can promise something it can never show.',
-          'There is no test suite. Two smoke scripts cover a real amount of ground, but they are untracked and manual, which means the next person to change the scraper has nothing to run.',
-          'Abandoned objects in R2 are never deleted. The helper exists and is never called; until it is, the bucket grows with every re-archive.',
-          'The ingestion path has never been run against a live account with a real archive, so selector durability and rate-limit behaviour are unmeasured. Verification needs an account that is safe to use, and no other person’s data.',
-        ],
+        label: 'github.com/michaelebube/XVault',
+        href: 'https://github.com/michaelebube/XVault',
+        note: 'The public repository for this personal archive tool. No live deployment is listed because the project is not published as a public application.',
+        kind: 'repo',
       },
     ],
-    links: [],
     captures: [
       'A sync actually in progress, rather than what a finished one leaves behind. The captures show the result of a run and never the run.',
       'Evidence that an archived image came from storage rather than from the original URL — the saved copy and the hotlinked one are indistinguishable on screen, which is why the media claim rests on the source and not on these pictures.',
@@ -509,14 +468,6 @@ export const caseStudies: CaseStudy[] = [
         height: 872,
       },
       {
-        src: '/work/xvault/Screenshot%202026-10-16%20183016.png',
-        alt: 'The same Relatable category in the compact single-column layout at 480 pixels wide: four archived posts with their author, date and archived timestamp, and the All, Uncategorized, Football, Humor and Relatable filters.',
-        caption:
-          'The same four records in the compact layout, at 480 × 637. It is the pair to the capture above, so what it adds is the narrow composition rather than anything new about the archive — evidence that the layout is responsive, not that ingestion produced more.',
-        width: 480,
-        height: 637,
-      },
-      {
         src: '/work/xvault/Screenshot%202026-10-16%20183431.png',
         alt: 'The Football category in the compact layout, listing five bookmarks, the second of which is a post whose photograph has been saved and renders beneath its text.',
         caption:
@@ -525,12 +476,20 @@ export const caseStudies: CaseStudy[] = [
         height: 870,
       },
       {
-        src: '/work/xvault/Screenshot%202026-10-16%20183055.png',
-        alt: 'The XVault sign-in screen at 352 pixels wide in dark theme: email and password fields, a Sign in button, and the line “Have an invite code? Create your account”.',
+        src: '/work/xvault/Screenshot%202026-10-17%20161443.png',
+        alt: 'The XVault Settings screen in light theme showing a healthy sync, the last successful sync, archived bookmark count and connected X account.',
         caption:
-          'The sign-in screen at 352 × 752 in dark theme, carrying the invite-code line that states the access model from the problem section on the screen where it applies. Included for the narrow layout and the dark theme; it says nothing about whether the gate is enforced, which is a question for the source rather than a screenshot.',
-        width: 352,
-        height: 752,
+          'The Settings screen in light theme, showing sync health, archive totals, scheduling information and the connected X account.',
+        width: 1917,
+        height: 867,
+      },
+      {
+        src: '/work/xvault/Screenshot%202026-10-17%20161556.png',
+        alt: 'The XVault Settings screen in dark theme showing a healthy sync, the last successful sync, archived bookmark count and connected X account.',
+        caption:
+          'The same Settings screen in dark theme, included to show the application’s alternate visual treatment without implying anything about the sync implementation.',
+        width: 1917,
+        height: 853,
       },
     ],
   },
