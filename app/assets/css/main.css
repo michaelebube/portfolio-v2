@@ -416,13 +416,8 @@
   }
 
   /* ---------------------------------------------------------------------------
-     Media frame — a labelled placeholder, not a screenshot.
-
-     No project screenshot has been captured for MindWell AI, GhostPay or the
-     investment-fund demo, and the XVault captures show login and empty-library
-     states only. This frame therefore shows its own status instead of imitating
-     a product: no fake window chrome, no grey bars standing in for content, no
-     invented numbers. Everything inside it is true text, so it needs no alt text.
+     Media frame — selected captures remain whole, while projects without
+     publishable imagery retain the labelled placeholder.
      --------------------------------------------------------------------------- */
   .frame {
     position: relative;
@@ -433,6 +428,19 @@
     overflow: hidden;
     background-color: var(--color-surface);
     border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    box-shadow:
+      0 1rem 2.5rem rgb(0 0 0 / 0.16),
+      inset 0 0 0 1px rgb(245 245 245 / 0.04);
+  }
+
+  .frame__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    object-fit: contain;
+    object-position: center;
   }
 
   /* The page's own grid motif, drawn at the frame's scale rather than the

@@ -38,7 +38,7 @@ useSeoMeta({
   ogDescription: () => study.value?.tagline ?? '',
 })
 
-/** The four facts worth having before the prose starts. */
+/** The three facts worth having before the prose starts. */
 const meta = computed(() => {
   const entry = study.value
   if (!entry) return []
@@ -46,7 +46,6 @@ const meta = computed(() => {
     { term: 'Status', detail: entry.status },
     { term: 'Role', detail: entry.role },
     { term: 'Period', detail: entry.period },
-    { term: 'Verified against', detail: entry.source },
   ]
 })
 
@@ -94,7 +93,7 @@ const figuresLead = computed(() => {
     </header>
 
     <!-- =====================================================================
-         The page's single glass panel: four facts about the project, floating
+         The page's single glass panel: three facts about the project, floating
          over the ambient field. No internal rules — a child of a glass surface
          paints no surface of its own, so the columns are separated by space and
          the label/small-caps step rather than by hairlines.
@@ -105,8 +104,8 @@ const figuresLead = computed(() => {
         class="liquid-glass"
         data-reveal
       >
-        <dl class="grid gap-x-10 gap-y-6 p-6 sm:grid-cols-2 md:p-8 lg:grid-cols-4">
-          <div v-for="fact in meta" :key="fact.term">
+        <dl class="grid w-full gap-x-10 gap-y-6 p-6 sm:grid-cols-2 md:p-8 lg:grid-cols-3">
+          <div v-for="fact in meta" :key="fact.term" class="w-full min-w-0">
             <dt class="label-mono">{{ fact.term }}</dt>
             <dd class="mt-2.5 leading-[1.6] text-ink">{{ fact.detail }}</dd>
           </div>
@@ -228,38 +227,6 @@ const figuresLead = computed(() => {
     </section>
 
     <!-- =====================================================================
-         What is still missing. Stated on the page rather than left for the
-         reader to notice — an absent capture is information about a project.
-         ===================================================================== -->
-    <section class="container-page mt-16 md:mt-24" aria-labelledby="captures-heading">
-      <div class="grid gap-6 border-t border-line pt-10 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-3">
-          <h2 id="captures-heading" class="text-[clamp(1.375rem,2.4vw,1.75rem)]" data-reveal>
-            {{ study.figures?.length ? 'Still to capture' : 'Not yet captured' }}
-          </h2>
-          <p class="mt-4 text-[0.9375rem] leading-[1.6] text-ink-muted" data-reveal>
-            {{
-              study.figures?.length
-                ? 'The captures above are the ones that exist. These are the ones that would still have to be taken from a running build, and an empty state is not a substitute for any of them.'
-                : 'No screenshot, recording or diagram of this project is shown anywhere on this page, because none exists that would be honest to show. This is what would need to be taken from a running build.'
-            }}
-          </p>
-        </div>
-
-        <ul class="space-y-3 lg:col-span-8 lg:col-start-5" data-reveal>
-          <li
-            v-for="capture in study.captures"
-            :key="capture"
-            class="flex gap-3 border-b border-line pb-3 leading-[1.7] text-ink-muted"
-          >
-            <span aria-hidden="true" class="mt-2.5 block h-px w-4 shrink-0 bg-ink-faint" />
-            <span>{{ capture }}</span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- =====================================================================
          Links. Rendered from data, so a link only ever appears here once it has
          been checked to resolve. With none verified, that is what it says.
          ===================================================================== -->
@@ -274,8 +241,9 @@ const figuresLead = computed(() => {
             <li v-for="link in study.links" :key="link.href" class="border-b border-line pb-4">
               <a
                 :href="link.href"
+                target="_blank"
                 class="inline-flex items-center gap-2 text-ink underline underline-offset-4"
-                rel="noopener"
+                rel="noopener noreferrer"
               >
                 <GitHubMark v-if="link.kind === 'repo'" />
                 {{ link.label }}
