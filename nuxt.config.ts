@@ -74,8 +74,30 @@ export default defineNuxtConfig({
           href: '/fonts/disket-mono/disket-mono-bold.woff2',
           crossorigin: 'anonymous',
         },
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          href: '/favicon.svg?v=3',
+        },
+        {
+          rel: 'shortcut icon',
+          type: 'image/svg+xml',
+          href: '/favicon.svg?v=3',
+        },
       ],
       script: [
+        // The landing cover, decided before the first paint. On the homepage,
+        // when this browser has not entered yet, the page shell is
+        // hidden until `app.vue` mounts the cover. The 2.5 s timer is the same
+        // failsafe as the reveal script below: if the app never mounts, the
+        // page is revealed rather than left invisible behind a cover that never
+        // arrives. `localStorage` is read inside the try because private
+        // contexts can deny it.
+        {
+          tagPosition: 'head',
+          innerHTML:
+            "(function(){try{if(location.pathname!=='/')return;if(localStorage.getItem('miko-splash-seen')==='1')return;var d=document.documentElement;d.classList.add('splash-pending');setTimeout(function(){if(d.dataset.splashBound!=='1')d.classList.remove('splash-pending')},2500)}catch(e){}})();",
+        },
         // Sets the reveal layer's hidden state before the first paint, so no
         // element is ever painted at full opacity and then snapped to zero.
         //
