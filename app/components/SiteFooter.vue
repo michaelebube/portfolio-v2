@@ -28,10 +28,11 @@ const year = new Date().getFullYear();
       </div>
 
       <p
-        class="mt-10 max-w-[32ch] text-[clamp(1.5rem,3vw,2.25rem)] leading-tight text-ink-muted"
+        class="footer-invitation mt-10 max-w-[32ch] text-[clamp(1.5rem,3vw,2.25rem)] leading-tight text-ink-muted"
         data-reveal
       >
-        Let's build something meaningful
+        Let's figure out what's
+        <span class="footer-invitation__word">possible.</span>
       </p>
 
       <div
