@@ -71,8 +71,8 @@ export interface CaseFigure {
   src: string
   /** What the image shows, for a reader who cannot see it. */
   alt: string
-  /** What this capture is evidence of — and what it is not. */
-  caption: string
+  /** Short label shown when the image is hovered or focused. */
+  tooltip: string
   width: number
   height: number
   /** Taken at phone width, so it is presented at phone scale. */
@@ -100,7 +100,6 @@ export interface CaseStudy {
   stack: string[]
   /** Optional controls for case studies that should omit evidence/link copy. */
   showLinks?: boolean
-  showEvidenceLead?: boolean
   /** The glass evidence panel at the top of the page. */
   sections: CaseSection[]
   /**
@@ -121,7 +120,7 @@ export interface CaseStudy {
   diagram?: { caption?: string }
 }
 
-export const caseStudies: CaseStudy[] = [
+const allCaseStudies: CaseStudy[] = [
   {
     slug: 'mindwell-ai',
     name: 'MindWell AI',
@@ -131,7 +130,7 @@ export const caseStudies: CaseStudy[] = [
     summary:
       'A conversational support app that classifies what a student is asking through Dialogflow CX, composes the reply with Gemini, and escalates to crisis resources when the message calls for it.',
     role: 'Fullstack and AI Engineer',
-    period: 'Final-year project, 2026',
+    period: '2026',
     source: 'mindwell/',
     stack: [
       'Nuxt 4',
@@ -274,56 +273,49 @@ export const caseStudies: CaseStudy[] = [
       {
         src: '/work/mindwell-ai/Screenshot%202026-10-16%20170716.png',
         alt: 'The MindWell landing page: a crisis-line banner above the navigation, the headline “A safe space for your mind on campus”, and Get Started and Sign in buttons.',
-        caption:
-          'The public landing page, with the crisis-line banner above the navigation and the chat launcher at the foot. Describes what the app is for; makes no outcome claim.',
+        tooltip: 'MindWell landing page',
         width: 1902,
         height: 867,
       },
       {
         src: '/work/mindwell-ai/Screenshot%202026-10-16%20170323.png',
         alt: 'The signed-in MindWell home screen: a greeting, a red SOS button in the top corner, and a green message field reading “What’s bothering you?”',
-        caption:
-          'The home screen after sign-in — greeting, SOS button, message field. The field is empty, so this is the way into a conversation rather than a conversation.',
+        tooltip: 'MindWell home screen',
         width: 1917,
         height: 867,
       },
       {
         src: '/work/mindwell-ai/Screenshot%202026-10-16%20170514.png',
         alt: 'The MindWell sidebar open over the home screen, listing search, a New chat action, seven conversation titles, and links to the account and mood meter.',
-        caption:
-          'The sidebar, and the only capture here that shows stored data: real conversation titles, each with its own rename and delete controls, plus the account and mood-meter links. It evidences that conversations are kept and listed per user; it does not show one being answered.',
+        tooltip: 'Conversation sidebar',
         width: 1917,
         height: 867,
       },
       {
         src: '/work/mindwell-ai/Screenshot%202026-10-17%20154304.png',
         alt: 'The MindWell mood dashboard: today’s mood is Sad, with a populated 180-day mood chart and mood insight panel.',
-        caption:
-          'The previous empty mood dashboard has been replaced with the populated view, showing a selected mood, a chart with recorded entries and a generated insight.',
+        tooltip: 'Mood dashboard',
         width: 1895,
         height: 862,
       },
       {
         src: '/work/mindwell-ai/Screenshot%202026-10-16%20170526.png',
         alt: 'The MindWell SOS support screen: a panel reading “You’re Not Alone Right Now”, and a second panel giving the emergency number 112.',
-        caption:
-          'The SOS screen reached from the home button, showing the escalation copy and the emergency number. It is a crisis route, not a clinical one, and nothing on this page shows it being evaluated — the helpline list underneath is cut off by the capture.',
+        tooltip: 'SOS support screen',
         width: 1902,
         height: 868,
       },
       {
         src: '/work/mindwell-ai/Screenshot%202026-10-17%20153413.png',
         alt: 'The MindWell login screen with email and password fields and a Log in button.',
-        caption:
-          'The login screen, showing the email-and-password entry point before a student reaches the protected application.',
+        tooltip: 'MindWell login',
         width: 958,
         height: 575,
       },
       {
         src: '/work/mindwell-ai/Screenshot%202026-10-17%20154202.png',
         alt: 'The MindWell mood log asking how the user feels, with Happy, Sad and Not sure choices.',
-        caption:
-          'The mood-log screen, where a student records a simple current feeling before it appears in the dashboard.',
+        tooltip: 'Mood log',
         width: 961,
         height: 575,
       },
@@ -467,32 +459,28 @@ export const caseStudies: CaseStudy[] = [
       {
         src: '/work/xvault/Screenshot%202026-10-16%20182957.png',
         alt: 'The XVault client in dark theme at desktop width: a sidebar counting Library 18 and Uncategorized 8 with Football, Humor and Relatable categories beneath it, a filter bar, and archived posts from the Relatable category each carrying its own archived timestamp.',
-        caption:
-          'The archive with records in it, and the first capture in this case study that shows a sync having run: the sidebar totals are non-zero, the categories carry counts, every post has its own archived timestamp, and the status line reads “Synced 2 minutes ago”. Two qualifications. The posts are unedited X content quoted as they were saved, so one of them is profane. And the categories were applied by hand through the review interface — the automatic pass described above still has no worker, so nothing here shows it running.',
+        tooltip: 'XVault archive',
         width: 1916,
         height: 872,
       },
       {
         src: '/work/xvault/Screenshot%202026-10-16%20183431.png',
-        alt: 'The Football category in the compact layout, listing five bookmarks, the second of which is a post whose photograph has been saved and renders beneath its text.',
-        caption:
-          'The Football category, where one post’s photograph has been archived alongside its text. The case study claims the media bytes are copied rather than hotlinked, and an image rendering on the card is consistent with that without demonstrating it — the copy and the original look the same on screen. Each post carries an archived timestamp a few minutes old.',
+        alt: 'The XVault sign-in screen with email and password fields, a Sign in button, and a Create your account link.',
+        tooltip: 'XVault sign-in screen',
         width: 1917,
         height: 870,
       },
       {
         src: '/work/xvault/Screenshot%202026-10-17%20161443.png',
         alt: 'The XVault Settings screen in light theme showing a healthy sync, the last successful sync, archived bookmark count and connected X account.',
-        caption:
-          'The Settings screen in light theme, showing sync health, archive totals, scheduling information and the connected X account.',
+        tooltip: 'Light settings screen',
         width: 1917,
         height: 867,
       },
       {
         src: '/work/xvault/Screenshot%202026-10-17%20161556.png',
         alt: 'The XVault Settings screen in dark theme showing a healthy sync, the last successful sync, archived bookmark count and connected X account.',
-        caption:
-          'The same Settings screen in dark theme, included to show the application’s alternate visual treatment without implying anything about the sync implementation.',
+        tooltip: 'Dark settings screen',
         width: 1917,
         height: 853,
       },
@@ -511,7 +499,6 @@ export const caseStudies: CaseStudy[] = [
     source:
       'GhostPay_BackendClient-main/ and GhostPay_Android_Nuxt/ (two repositories, inspected separately)',
     showLinks: false,
-    showEvidenceLead: false,
     stack: [
       'TypeScript',
       'Nuxt 4',
@@ -963,6 +950,9 @@ export const caseStudies: CaseStudy[] = [
     ],
   },
 ]
+
+/** Only featured projects receive dedicated case-study pages. */
+export const caseStudies = allCaseStudies.filter((entry) => entry.tier === 'featured')
 
 export function findCaseStudy(slug: string): CaseStudy | undefined {
   return caseStudies.find((entry) => entry.slug === slug)
