@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    @font-face {
+      font-family: "Disket Mono";
+      src: url("/fonts/disket-mono/disket-mono-bold.woff2") format("woff2");
+      font-weight: 700;
+    }
+    .wordmark {
+      font-family: "Disket Mono", ui-monospace, monospace;
+      font-weight: 700;
+    }
+  </style>
+  <rect width="64" height="64" fill="#090909"/>
+  <path d="M8 8h48v48H8z" fill="none" stroke="#f5f5f5" stroke-width="2"/>
+  <path d="M8 16h8M48 16h8" fill="none" stroke="#737373" stroke-width="2"/>
+  <text class="wordmark" x="32" y="39" fill="#f5f5f5" font-size="13" letter-spacing="0.4" text-anchor="middle">MIKO</text>
+  <path d="M16 48h32" fill="none" stroke="#a3a3a3" stroke-width="2"/>
+</svg>

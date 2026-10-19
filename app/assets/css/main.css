@@ -109,6 +109,20 @@
     scroll-padding-top: 1.7rem;
   }
 
+  /* The landing cover's pre-paint state. The inline head script adds
+     `splash-pending` before the first paint, so the homepage is not painted and
+     then covered. `app.vue` removes the class on mount, or the script's own
+     failsafe removes it after 2.5 s if the app never mounts. */
+  .splash-pending [data-app-shell] {
+    visibility: hidden;
+  }
+
+  /* The cover owns the viewport while it is open; the page beneath must not
+     scroll under it. */
+  html.splash-open {
+    overflow: hidden;
+  }
+
   body {
     margin: 0;
     /* No background on body: --color-canvas is painted by html, and the fixed
