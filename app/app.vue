@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
  * The landing cover is a persistent arrival, not a route: it sits over the
- * homepage once per browser, and once entered it does not return. The
- * storage check happens here rather than in the cover component because the
- * page shell — which must be hidden and `inert` while the cover is open — is
- * this component's child, and the cover is its sibling.
+ * homepage once every three days per browser. The storage check happens here
+ * rather than in the cover component because the page shell — which must be
+ * hidden and `inert` while the cover is open — is this component's child, and
+ * the cover is its sibling.
  *
  * The pre-paint script in `nuxt.config.ts` adds `html.splash-pending` before
  * the first paint when this browser has not seen the cover, so the hidden page
@@ -13,6 +13,7 @@
  * mounts, the class times out and the page becomes visible on its own.
  */
 const SPLASH_KEY = "miko-splash-seen";
+const SPLASH_INTERVAL_MS = 3 * 24 * 60 * 60 * 1000;
 
 const route = useRoute();
 
@@ -23,7 +24,15 @@ let leaveTimer: ReturnType<typeof setTimeout> | undefined;
 
 function hasSeenSplash() {
   try {
-    return localStorage.getItem(SPLASH_KEY) === "1";
+    const stored = localStorage.getItem(SPLASH_KEY);
+    if (!stored) return false;
+
+    const { seenAt } = JSON.parse(stored) as { seenAt?: unknown };
+    return (
+      typeof seenAt === "number" &&
+      Number.isFinite(seenAt) &&
+      Date.now() - seenAt < SPLASH_INTERVAL_MS
+    );
   } catch {
     // Storage can be denied in private contexts. Showing the cover again is a
     // smaller cost than failing to render the page.
@@ -33,7 +42,7 @@ function hasSeenSplash() {
 
 function markSplashSeen() {
   try {
-    localStorage.setItem(SPLASH_KEY, "1");
+    localStorage.setItem(SPLASH_KEY, JSON.stringify({ seenAt: Date.now() }));
   } catch {
     // Same as above: the visit still works, it just may show the cover again.
   }

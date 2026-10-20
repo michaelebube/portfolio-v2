@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * Landing cover. A full-viewport title plate shown once per browser session
- * before the homepage, dismissed by the reader rather than by a timer — nothing
- * is forced to autoplay and nothing is loaded behind it that the reader did not
- * ask for.
+ * Landing cover. A full-viewport title plate shown once every seven days per
+ * browser before the homepage, dismissed by the reader rather than by a timer
+ * — nothing is forced to autoplay and nothing is loaded behind it that the
+ * reader did not ask for.
  *
  * The component owns only its own presentation and keyboard behaviour. Whether
  * it appears at all, the session flag that stops it returning, and the `inert`
