@@ -231,7 +231,7 @@ export const credentials: Credential[] = [
 /** About rail. Cumulative GPA appears here and nowhere else (AGENT.md §11). */
 export const aboutFacts: { term: string; detail: string }[] = [
   { term: 'Education', detail: 'Covenant University — BSc Computer Science, 2022–2026' },
-  { term: 'Cumulative GPA', detail: '4.97 / 5.0' },
+  { term: 'Cumulative GPA', detail: '4.96 / 5.0' },
   { term: 'Experience', detail: 'Cowrywise (YC S18) — Engineering Intern, Frontend, 2025' },
   { term: 'Working across', detail: 'Frontend engineering, backend systems, applied AI' },
 ]
@@ -283,7 +283,7 @@ export const toolkit: ToolkitGroup[] = [
 
 export const contact = {
   email: 'michaelebube18@gmail.com',
-  resume: { href: '/Resume-Michael_Ebube.pdf', label: 'Download résumé', meta: 'PDF · 644 KB' },
+  resume: { href: '/Michael_Ebube_CV.pdf', label: 'Download résumé', meta: 'PDF · 644 KB' },
 } as const
 
 /**
